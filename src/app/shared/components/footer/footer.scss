@@ -1,0 +1,117 @@
+.footer {
+  margin-top: 60px;
+  background: var(--bg-secondary);
+  color: var(--text-primary);
+  border-top: 1px solid var(--border);
+}
+
+.footer-main {
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1.2fr 1.2fr;
+  gap: 45px;
+  padding-top: 55px;
+  padding-bottom: 50px;
+}
+
+.footer-brand {
+  .logo {
+    display: inline-flex;
+    text-decoration: none;
+    font-size: 25px;
+    font-weight: 800;
+    letter-spacing: -1px;
+    margin-bottom: 16px;
+  }
+
+  .logo-game {
+    color: var(--text-primary);
+  }
+
+  .logo-zone {
+    color: var(--primary);
+  }
+
+  p {
+    max-width: 280px;
+    color: var(--text-secondary);
+    font-size: 14px;
+    line-height: 1.7;
+  }
+}
+
+.footer-column {
+  display: flex;
+  flex-direction: column;
+  gap: 13px;
+
+  h3 {
+    margin: 0 0 8px;
+    font-size: 15px;
+    font-weight: 700;
+  }
+
+  a {
+    width: fit-content;
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 14px;
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: var(--primary);
+    }
+  }
+
+  p {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 14px;
+  }
+}
+
+.social-links {
+  display: flex;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
+.footer-bottom {
+  border-top: 1px solid var(--border);
+  padding: 20px 0;
+
+  .container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 15px;
+  }
+
+  p,
+  span {
+    margin: 0;
+    color: var(--text-secondary);
+    font-size: 13px;
+  }
+}
+
+// Responsive layout
+@media (max-width: 900px) {
+  .footer-main {
+    grid-template-columns: repeat(2, 1fr);
+    gap: 35px;
+  }
+}
+
+@media (max-width: 550px) {
+  .footer-main {
+    grid-template-columns: 1fr;
+    gap: 30px;
+    padding-top: 40px;
+    padding-bottom: 35px;
+  }
+
+  .footer-bottom .container {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

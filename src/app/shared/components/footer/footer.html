@@ -1,0 +1,61 @@
+<footer class="footer">
+  <div class="footer-main container">
+
+    <!-- Brand -->
+    <div class="footer-brand">
+      <a routerLink="/" class="logo">
+        <span class="logo-game">GAME</span><span class="logo-zone">ZONE</span>
+      </a>
+
+      <p>
+        {{ languageService.language() === 'ka'
+          ? 'თქვენი სათამაშო სამყაროს ერთ-ერთი საუკეთესო ადგილი.'
+          : 'Your destination for games, gaming PCs, components and accessories.' }}
+      </p>
+    </div>
+
+    <!-- Quick links -->
+    <div class="footer-column">
+      <h3>{{ languageService.language() === 'ka' ? 'ნავიგაცია' : 'Quick Links' }}</h3>
+      <a routerLink="/">{{ languageService.translations().home }}</a>
+      <a routerLink="/products">{{ languageService.translations().games }}</a>
+      <a routerLink="/products">{{ languageService.translations().consoles }}</a>
+      <a routerLink="/products">{{ languageService.translations().gamingPCs }}</a>
+      <a routerLink="/products">{{ languageService.translations().components }}</a>
+    </div>
+
+    <!-- Customer support -->
+    <div class="footer-column">
+      <h3>{{ languageService.language() === 'ka' ? 'მომხმარებლის დახმარება' : 'Customer Support' }}</h3>
+      <a routerLink="/contact">{{ languageService.language() === 'ka' ? 'კონტაქტი' : 'Contact Us' }}</a>
+      <a routerLink="/delivery">{{ languageService.language() === 'ka' ? 'მიწოდება' : 'Delivery Information' }}</a>
+      <a routerLink="/returns">{{ languageService.language() === 'ka' ? 'დაბრუნება' : 'Returns & Refunds' }}</a>
+      <a routerLink="/faq">FAQ</a>
+    </div>
+
+    <!-- Contact -->
+    <div class="footer-column footer-contact">
+      <h3>{{ languageService.language() === 'ka' ? 'დაგვიკავშირდით' : 'Contact Us' }}</h3>
+      <p>Email: support@gamezone.ge</p>
+      <p>Georgia, Tbilisi</p>
+      <div class="social-links">
+        <a href="https://www.facebook.com/" target="_blank" rel="noopener noreferrer">Facebook</a>
+        <a href="https://www.instagram.com/" target="_blank" rel="noopener noreferrer">Instagram</a>
+      </div>
+    </div>
+
+  </div>
+
+  <!-- Bottom bar -->
+  <div class="footer-bottom">
+    <div class="container">
+      <p>
+        © {{ currentYear }} GameZone.
+        {{ languageService.language() === 'ka'
+          ? 'ყველა უფლება დაცულია.'
+          : 'All rights reserved.' }}
+      </p>
+      <span>{{ languageService.language() === 'ka' ? 'მოთამაშეებისთვის, მოთამაშეებისგან.' : 'For Gamers. By Gamers.' }}</span>
+    </div>
+  </div>
+</footer>

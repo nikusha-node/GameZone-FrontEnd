@@ -1,0 +1,246 @@
+<!-- HERO SECTION -->
+<section class="hero">
+    <div class="container hero-content">
+        <div class="hero-text">
+            <span class="hero-label">
+                {{ languageService.language() === 'ka'
+                ? 'კეთილი იყოს შენი მობრძანება GAMEZONE-ში'
+                : 'WELCOME TO GAMEZONE' }}
+            </span>
+
+            <h1>
+                {{ languageService.language() === 'ka'
+                ? 'აამაღლე შენი სათამაშო გამოცდილება'
+                : 'LEVEL UP YOUR GAMING EXPERIENCE' }}
+            </h1>
+
+            <p>
+                {{ languageService.language() === 'ka'
+                ? 'აღმოაჩინე უახლესი თამაშები, სათამაშო კომპიუტერები, კომპონენტები და აქსესუარები.'
+                : 'Discover the latest games, gaming PCs, components and accessories.' }}
+            </p>
+
+            <a routerLink="/products" class="hero-button">
+                {{ languageService.language() === 'ka'
+                ? 'პროდუქტების ნახვა'
+                : 'Explore Products' }}
+                <span>→</span>
+            </a>
+        </div>
+
+        <div class="hero-decoration" (mousemove)="onHeroMouseMove($event)" (mouseleave)="resetHeroMouse()">
+            <div class="hero-circle circle-one"></div>
+            <div class="hero-circle circle-two"></div>
+
+            <div class="hero-controller"
+                [style.transform]="'translate(calc(-50% + ' + mouseX + 'px), calc(-65% + ' + mouseY + 'px))'">
+                🎮
+            </div>
+        </div>
+    </div>
+</section>
+
+<section class="brands-section container">
+  <div class="brands-heading">
+    <h2>
+      {{ languageService.language() === 'ka' ? 'პოპულარული ბრენდები' : 'Popular Brands' }}
+    </h2>
+
+    <div class="carousel-controls">
+      <button
+        class="carousel-arrow brand-arrow"
+        type="button"
+        aria-label="Scroll brands left"
+        (click)="scrollBrands(-1)"
+      >
+        &#8592;
+      </button>
+
+      <button
+        class="carousel-arrow brand-arrow"
+        type="button"
+        aria-label="Scroll brands right"
+        (click)="scrollBrands(1)"
+      >
+        &#8594;
+      </button>
+    </div>
+  </div>
+
+<div class="brand-carousel">
+  <div class="brand-track">
+    @for (brand of brands; track brand.name) {
+      <a class="brand-card" routerLink="/products">
+        <img [src]="brand.image" [alt]="brand.name" />
+      </a>
+    }
+
+    <!-- Duplicate logos for seamless looping -->
+    @for (brand of brands; track brand.name) {
+      <a class="brand-card" routerLink="/products" aria-hidden="true" tabindex="-1">
+        <img [src]="brand.image" alt="" />
+      </a>
+    }
+  </div>
+</div>
+</section>
+
+
+<!-- CATEGORIES -->
+<section class="categories-section container">
+  <div class="section-heading">
+    <div>
+      <span class="section-eyebrow">
+        {{ languageService.language() === 'ka' ? 'აღმოაჩინე' : 'Explore' }}
+      </span>
+
+      <h2>
+        {{ languageService.language() === 'ka' ? 'კატეგორიები' : 'Shop by Category' }}
+      </h2>
+    </div>
+
+    <div class="carousel-controls">
+      <button
+        class="carousel-arrow"
+        type="button"
+        aria-label="Scroll categories left"
+        (click)="scrollCategories(-1)"
+      >
+        &#8592;
+      </button>
+
+      <button
+        class="carousel-arrow"
+        type="button"
+        aria-label="Scroll categories right"
+        (click)="scrollCategories(1)"
+      >
+        &#8594;
+      </button>
+    </div>
+  </div>
+
+  <div class="category-carousel" #categoryCarousel>
+    @for (category of categories; track category.en) {
+      <a class="category-card" routerLink="/products">
+        <div class="category-image">
+          <img
+            [src]="category.image"
+            [alt]="languageService.language() === 'ka' ? category.ka : category.en"
+          />
+        </div>
+
+        <div class="category-info">
+          <h3>
+            {{ languageService.language() === 'ka' ? category.ka : category.en }}
+          </h3>
+
+          <span class="category-arrow">&#8594;</span>
+        </div>
+      </a>
+    }
+  </div>
+</section>
+
+<!-- SPECIAL OFFERS -->
+<section class="offers-section">
+    <div class="container">
+        <div class="section-heading">
+            <div>
+                <span class="section-label">
+                    {{ languageService.language() === 'ka' ? 'არ გამოტოვო' : 'DON’T MISS OUT' }}
+                </span>
+
+                <h2>
+                    {{ languageService.language() === 'ka' ? 'სპეციალური შეთავაზებები' : 'Special Offers' }}
+                </h2>
+            </div>
+
+            <a routerLink="/products" class="view-all">
+                {{ languageService.language() === 'ka' ? 'ყველას ნახვა' : 'View All' }} →
+            </a>
+        </div>
+
+        <div class="empty-products">
+            <span>🏷️</span>
+            <h3>
+                {{ languageService.language() === 'ka'
+                ? 'შეთავაზებები მალე დაემატება'
+                : 'Special offers coming soon' }}
+            </h3>
+            <p>
+                {{ languageService.language() === 'ka'
+                ? 'თვალი ადევნე ჩვენს ფასდაკლებებს.'
+                : 'Stay tuned for great deals and discounts.' }}
+            </p>
+        </div>
+    </div>
+</section>
+
+<!-- POPULAR PRODUCTS -->
+<section class="products-section container">
+    <div class="section-heading">
+        <div>
+            <span class="section-label">
+                {{ languageService.language() === 'ka' ? 'მოთამაშეების არჩევანი' : 'GAMER FAVORITES' }}
+            </span>
+
+            <h2>
+                {{ languageService.language() === 'ka' ? 'პოპულარული პროდუქტები' : 'Popular Products' }}
+            </h2>
+        </div>
+
+        <a routerLink="/products" class="view-all">
+            {{ languageService.language() === 'ka' ? 'ყველას ნახვა' : 'View All' }} →
+        </a>
+    </div>
+
+    <div class="empty-products">
+        <span>🔥</span>
+        <h3>
+            {{ languageService.language() === 'ka'
+            ? 'პოპულარული პროდუქტები მალე დაემატება'
+            : 'Popular products will appear here' }}
+        </h3>
+        <p>
+            {{ languageService.language() === 'ka'
+            ? 'პროდუქტები ჩაიტვირთება ჩვენი კატალოგიდან.'
+            : 'Products will be loaded from our store catalog.' }}
+        </p>
+    </div>
+</section>
+
+<!-- NEW ARRIVALS -->
+<section class="new-arrivals-section">
+    <div class="container">
+        <div class="section-heading">
+            <div>
+                <span class="section-label">
+                    {{ languageService.language() === 'ka' ? 'სიახლეები' : 'JUST ARRIVED' }}
+                </span>
+
+                <h2>
+                    {{ languageService.language() === 'ka' ? 'ახალი პროდუქტები' : 'New Arrivals' }}
+                </h2>
+            </div>
+
+            <a routerLink="/products" class="view-all">
+                {{ languageService.language() === 'ka' ? 'ყველას ნახვა' : 'View All' }} →
+            </a>
+        </div>
+
+        <div class="empty-products">
+            <span>✨</span>
+            <h3>
+                {{ languageService.language() === 'ka'
+                ? 'ახალი პროდუქტები მალე დაემატება'
+                : 'New arrivals coming soon' }}
+            </h3>
+            <p>
+                {{ languageService.language() === 'ka'
+                ? 'აქ გამოჩნდება მაღაზიაში დამატებული უახლესი პროდუქტები.'
+                : 'The latest products added to our store will appear here.' }}
+            </p>
+        </div>
+    </div>
+</section>

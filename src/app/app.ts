@@ -1,8 +1,10 @@
 import { Component, signal } from '@angular/core';
 import { RouterOutlet } from '@angular/router';
+import { Navbar } from './shared/components/navbar/navbar';
+import { Footer } from './shared/components/footer/footer';
 
 @Component({
-  imports: [RouterOutlet],
+  imports: [RouterOutlet, Navbar, Footer],
   selector: 'app-root',
   styleUrl: './app.scss',
   templateUrl: './app.html',
@@ -10,3 +12,4 @@ import { RouterOutlet } from '@angular/router';
 export class App {
   protected readonly title = signal('GameZone-FrontEnd');
 }
+  
