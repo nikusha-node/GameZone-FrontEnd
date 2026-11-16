@@ -1,6 +1,17 @@
 
-import { Component, inject } from '@angular/core';
-import { FormBuilder, ReactiveFormsModule, Validators } from '@angular/forms';
+import {
+  Component,
+  inject,
+  ChangeDetectorRef
+} from '@angular/core';
+
+import {
+  FormBuilder,
+  ReactiveFormsModule,
+  Validators
+} from '@angular/forms';
+
+import { Router } from '@angular/router';
 
 import { AuthService } from '../../core/services/auth';
 
@@ -18,15 +29,18 @@ type AuthMode = 'login' | 'register' | 'verify';
   styleUrl: './account.scss'
 })
 export class Account {
+
   private fb = inject(FormBuilder);
   private authService = inject(AuthService);
+  private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   mode: AuthMode = 'login';
+
   loading = false;
   errorMessage = '';
   successMessage = '';
-
-  private registeredEmail = '';
+  verificationCompleted = false;
 
   loginForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
@@ -37,18 +51,25 @@ export class Account {
     firstName: ['', Validators.required],
     lastName: ['', Validators.required],
     email: ['', [Validators.required, Validators.email]],
-    password: ['', [Validators.required, Validators.minLength(8)]]
+    password: [
+      '',
+      [
+        Validators.required,
+        Validators.minLength(8),
+        Validators.pattern(/^(?=.*[a-z])(?=.*[A-Z])(?=.*\d).+$/)
+      ]
+    ]
   });
 
   verifyForm = this.fb.nonNullable.group({
     email: ['', [Validators.required, Validators.email]],
-    code: ['', [Validators.required, Validators.minLength(6), Validators.maxLength(6)]]
+    code: ['', [Validators.required, Validators.pattern(/^\d{6}$/)]]
   });
 
   setMode(mode: AuthMode): void {
     this.mode = mode;
-    this.errorMessage = '';
-    this.successMessage = '';
+    this.clearMessages();
+    this.cdr.markForCheck();
   }
 
   login(): void {
@@ -65,9 +86,13 @@ export class Account {
     this.authService.login(request).subscribe({
       next: () => {
         this.loading = false;
-        this.successMessage = 'Login successful! You are now signed in.';
+        this.cdr.markForCheck();
+        this.router.navigate(['/profile']);
       },
-      error: error => this.handleError(error)
+
+      error: error => {
+        this.handleError(error);
+      }
     });
   }
 
@@ -85,16 +110,20 @@ export class Account {
     this.authService.register(request).subscribe({
       next: response => {
         this.loading = false;
-        this.registeredEmail = request.email;
 
         this.verifyForm.patchValue({
           email: request.email
         });
 
         this.mode = 'verify';
-        this.successMessage = response || 'Registration successful. Check your email for the verification code.';
+        this.successMessage = response;
+
+        this.cdr.markForCheck();
       },
-      error: error => this.handleError(error)
+
+      error: error => {
+        this.handleError(error);
+      }
     });
   }
 
@@ -112,19 +141,35 @@ export class Account {
     this.authService.verifyEmail(request).subscribe({
       next: () => {
         this.loading = false;
-        this.successMessage = 'Email verified successfully! You are now signed in.';
+        this.verificationCompleted = true;
+        this.cdr.markForCheck();
+        this.router.navigate(['/profile']);
       },
-      error: error => this.handleError(error)
+
+      error: error => {
+        this.handleError(error);
+      }
     });
+  }
+
+  goHome(): void {
+    this.router.navigate(['/']);
+  }
+
+  goToProfile(): void {
+    this.router.navigate(['/profile']);
   }
 
   private handleError(error: any): void {
     this.loading = false;
 
     this.errorMessage =
-      typeof error.error === 'string'
-        ? error.error
-        : error.error?.message || 'Something went wrong. Please try again.';
+      error?.error?.message ||
+      error?.error?.Message ||
+      error?.error ||
+      'Something went wrong. Please try again.';
+
+    this.cdr.markForCheck();
   }
 
   private clearMessages(): void {

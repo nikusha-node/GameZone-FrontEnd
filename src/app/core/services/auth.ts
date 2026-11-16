@@ -19,9 +19,10 @@ export class AuthService {
   private readonly tokenKey = 'gamezone_token';
 
   register(request: RegisterRequest): Observable<string> {
-    return this.http.post<string>(
+    return this.http.post(
       `${this.apiUrl}/register`,
-      request
+      request,
+      { responseType: 'text' }
     );
   }
 

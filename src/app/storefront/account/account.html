@@ -1,4 +1,3 @@
-
 <div class="account-page">
   <div class="account-card">
 
@@ -6,133 +5,150 @@
       <h1>GAME<span>ZONE</span></h1>
       <p>
         @if (mode === 'login') {
-          Welcome back. Sign in to your account.
+        Welcome back. Sign in to your account.
         } @else if (mode === 'register') {
-          Create your GameZone account.
+        Create your GameZone account.
         } @else {
-          Verify your email address.
+        Verify your email address.
         }
       </p>
     </div>
 
     @if (errorMessage) {
-      <div class="message error">{{ errorMessage }}</div>
+    <div class="message error">{{ errorMessage }}</div>
     }
 
     @if (successMessage) {
-      <div class="message success">{{ successMessage }}</div>
+    <div class="message success">{{ successMessage }}</div>
     }
 
     @if (mode === 'login') {
-      <form [formGroup]="loginForm" (ngSubmit)="login()">
+    <form [formGroup]="loginForm" (ngSubmit)="login()">
 
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" formControlName="email"
-            placeholder="Enter your email" autocomplete="email">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" formControlName="email" placeholder="Enter your email" autocomplete="email">
 
-          @if (loginForm.controls.email.touched && loginForm.controls.email.invalid) {
-            <small>Please enter a valid email.</small>
-          }
-        </div>
+        @if (loginForm.controls.email.touched && loginForm.controls.email.invalid) {
+        <small>Please enter a valid email.</small>
+        }
+      </div>
 
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" formControlName="password"
-            placeholder="Enter your password" autocomplete="current-password">
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" formControlName="password" placeholder="Enter your password"
+          autocomplete="current-password">
 
-          @if (loginForm.controls.password.touched && loginForm.controls.password.invalid) {
-            <small>Password is required.</small>
-          }
-        </div>
+        @if (loginForm.controls.password.touched && loginForm.controls.password.invalid) {
+        <small>Password is required.</small>
+        }
+      </div>
 
-        <button type="submit" [disabled]="loading">
-          {{ loading ? 'Signing in...' : 'Sign In' }}
-        </button>
-      </form>
+      <button type="submit" [disabled]="loading">
+        {{ loading ? 'Signing in...' : 'Sign In' }}
+      </button>
+    </form>
 
-      <p class="switch-text">
-        Don't have an account?
-        <a (click)="setMode('register')">Create account</a>
-      </p>
+    <p class="switch-text">
+      Don't have an account?
+      <a (click)="setMode('register')">Create account</a>
+    </p>
     }
 
     @else if (mode === 'register') {
-      <form [formGroup]="registerForm" (ngSubmit)="register()">
+    <form [formGroup]="registerForm" (ngSubmit)="register()">
 
-        <div class="form-group">
-          <label>First Name</label>
-          <input type="text" formControlName="firstName"
-            placeholder="First name" autocomplete="given-name">
-        </div>
+      <div class="form-group">
+        <label>First Name</label>
+        <input type="text" formControlName="firstName" placeholder="First name" autocomplete="given-name">
+      </div>
 
-        <div class="form-group">
-          <label>Last Name</label>
-          <input type="text" formControlName="lastName"
-            placeholder="Last name" autocomplete="family-name">
-        </div>
+      <div class="form-group">
+        <label>Last Name</label>
+        <input type="text" formControlName="lastName" placeholder="Last name" autocomplete="family-name">
+      </div>
 
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" formControlName="email"
-            placeholder="Enter your email" autocomplete="email">
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" formControlName="email" placeholder="Enter your email" autocomplete="email">
 
-          @if (registerForm.controls.email.touched && registerForm.controls.email.invalid) {
-            <small>Please enter a valid email.</small>
-          }
-        </div>
+        @if (registerForm.controls.email.touched && registerForm.controls.email.invalid) {
+        <small>Please enter a valid email.</small>
+        }
+      </div>
 
-        <div class="form-group">
-          <label>Password</label>
-          <input type="password" formControlName="password"
-            placeholder="Minimum 8 characters" autocomplete="new-password">
+      <div class="form-group">
+        <label>Password</label>
+        <input type="password" formControlName="password" placeholder="Minimum 8 characters"
+          autocomplete="new-password">
 
-          @if (registerForm.controls.password.touched && registerForm.controls.password.invalid) {
-            <small>Password must contain at least 8 characters.</small>
-          }
-        </div>
+        @if (registerForm.controls.password.touched && registerForm.controls.password.invalid) {
+        <small>Password must contain at least 8 characters.</small>
+        }
+      </div>
 
-        <button type="submit" [disabled]="loading">
-          {{ loading ? 'Creating account...' : 'Create Account' }}
-        </button>
-      </form>
+      <button type="submit" [disabled]="loading">
+        {{ loading ? 'Creating account...' : 'Create Account' }}
+      </button>
+    </form>
 
-      <p class="switch-text">
-        Already have an account?
-        <a (click)="setMode('login')">Sign in</a>
-      </p>
+    <p class="switch-text">
+      Already have an account?
+      <a (click)="setMode('login')">Sign in</a>
+    </p>
     }
+
 
     @else if (mode === 'verify') {
-      <form [formGroup]="verifyForm" (ngSubmit)="verifyEmail()">
 
-        <div class="form-group">
-          <label>Email</label>
-          <input type="email" formControlName="email"
-            placeholder="Your registered email">
-        </div>
+    @if (verificationCompleted) {
+    <div class="verification-success">
+      <div class="success-icon">✓</div>
 
-        <div class="form-group">
-          <label>Verification Code</label>
-          <input type="text" formControlName="code"
-            placeholder="Enter 6-digit code" maxlength="6"
-            inputmode="numeric" autocomplete="one-time-code">
+      <h2>Email Verified!</h2>
 
-          @if (verifyForm.controls.code.touched && verifyForm.controls.code.invalid) {
-            <small>Enter your 6-digit verification code.</small>
-          }
-        </div>
+      <p>Your GameZone account is ready. Welcome aboard!</p>
 
-        <button type="submit" [disabled]="loading">
-          {{ loading ? 'Verifying...' : 'Verify Email' }}
+      <div class="success-actions">
+        <button type="button" (click)="goHome()">
+          Go to Home
         </button>
-      </form>
-
-      <p class="switch-text">
-        Already verified or want to sign in?
-        <a (click)="setMode('login')">Back to login</a>
-      </p>
+      </div>
+    </div>
     }
+
+    @else {
+    <form [formGroup]="verifyForm" (ngSubmit)="verifyEmail()">
+
+      <div class="form-group">
+        <label>Email</label>
+        <input type="email" formControlName="email" placeholder="Your registered email">
+      </div>
+
+      <div class="form-group">
+        <label>Verification Code</label>
+        <input type="text" formControlName="code" placeholder="Enter 6-digit code" maxlength="6" inputmode="numeric"
+          autocomplete="one-time-code">
+
+        @if (verifyForm.controls.code.touched &&
+        verifyForm.controls.code.invalid) {
+        <small>Enter your 6-digit verification code.</small>
+        }
+      </div>
+
+      <button type="submit" [disabled]="loading">
+        {{ loading ? 'Verifying...' : 'Verify Email' }}
+      </button>
+    </form>
+
+    <p class="switch-text">
+      Already verified or want to sign in?
+      <a (click)="setMode('login')">Back to login</a>
+    </p>
+    }
+
+    }
+
 
   </div>
 </div>

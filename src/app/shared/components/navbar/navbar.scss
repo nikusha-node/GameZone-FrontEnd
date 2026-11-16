@@ -120,7 +120,7 @@
 
 .icon-button:hover {
   background: var(--bg-hover);
-  transform: rotate(12deg);
+  transform: scale(110%)
 }
 
 .header-link {
@@ -252,6 +252,34 @@
 
 .category-list .sale-link {
   color: var(--danger);
+}
+
+.profile-button {
+  width: 36px;
+  height: 36px;
+  display: grid;
+  place-items: center;
+  color: var(--text-primary);
+  background: var(--bg-card);
+  border: 1px solid var(--border);
+  border-radius: 50%;
+  text-decoration: none;
+  cursor: pointer;
+
+  transition:
+    background 0.2s ease,
+    color 0.2s ease,
+    border-color 0.2s ease,
+    transform 0.2s ease;
+
+  &:hover {
+    background: var(--bg-hover);
+    transform: scale(110%)
+  }
+
+  svg {
+    display: block;
+  }
 }
 
 

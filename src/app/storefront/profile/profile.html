@@ -1,0 +1,201 @@
+
+<div class="profile-page">
+  <div class="profile-container">
+
+    @if (loading) {
+      <div class="loading-state">
+        <div class="loader"></div>
+        <p>Loading your profile...</p>
+      </div>
+    }
+
+    @else if (errorMessage && !profile) {
+      <div class="error-state">
+        <h2>Something went wrong</h2>
+        <p>{{ errorMessage }}</p>
+        <button (click)="loadProfile()">Try Again</button>
+      </div>
+    }
+
+    @else if (profile) {
+
+      <div class="profile-header">
+        <div>
+          <span class="eyebrow">GAMEZONE ACCOUNT</span>
+          <h1>My Profile</h1>
+          <p>Manage your personal information and account.</p>
+        </div>
+
+        <button class="home-button" (click)="goHome()">
+          Back to Store
+        </button>
+      </div>
+
+      <div class="profile-card">
+
+        @if (errorMessage) {
+          <div class="message error">{{ errorMessage }}</div>
+        }
+
+        @if (successMessage) {
+          <div class="message success">{{ successMessage }}</div>
+        }
+
+        <div class="profile-identity">
+          <div class="avatar">
+            {{ profile.firstName.charAt(0).toUpperCase() }}
+          </div>
+
+          <div class="identity-info">
+            <h2>{{ profile.firstName }} {{ profile.lastName }}</h2>
+            <p>{{ profile.email }}</p>
+          </div>
+
+          <span class="verified-badge">✓ Verified</span>
+        </div>
+
+        <div class="profile-divider"></div>
+
+        <h3>Personal Information</h3>
+
+        @if (!editMode) {
+          <div class="information-grid">
+            <div class="information-item">
+              <label>First Name</label>
+              <p>{{ profile.firstName }}</p>
+            </div>
+
+            <div class="information-item">
+              <label>Last Name</label>
+              <p>{{ profile.lastName }}</p>
+            </div>
+
+            <div class="information-item">
+              <label>Email Address</label>
+              <p>{{ profile.email }}</p>
+            </div>
+          </div>
+
+          <button class="action-button" (click)="toggleEdit()">
+            Edit Profile
+          </button>
+        }
+
+        @if (editMode) {
+          <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
+
+            <div class="information-grid">
+              <div class="information-item">
+                <label>First Name</label>
+                <input type="text" formControlName="firstName">
+
+                @if (profileForm.controls.firstName.touched &&
+                     profileForm.controls.firstName.invalid) {
+                  <small>First name is required.</small>
+                }
+              </div>
+
+              <div class="information-item">
+                <label>Last Name</label>
+                <input type="text" formControlName="lastName">
+
+                @if (profileForm.controls.lastName.touched &&
+                     profileForm.controls.lastName.invalid) {
+                  <small>Last name is required.</small>
+                }
+              </div>
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" [disabled]="saving">
+                {{ saving ? 'Saving...' : 'Save Changes' }}
+              </button>
+
+              <button type="button" class="cancel-button"
+                (click)="toggleEdit()" [disabled]="saving">
+                Cancel
+              </button>
+            </div>
+          </form>
+        }
+
+        <div class="profile-divider"></div>
+
+        <h3>Security</h3>
+
+        @if (!passwordMode) {
+          <p class="security-description">
+            Keep your account secure by updating your password regularly.
+          </p>
+
+          <button class="action-button" (click)="togglePassword()">
+            Change Password
+          </button>
+        }
+
+        @if (passwordMode) {
+          <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+
+            <div class="form-group">
+              <label>Current Password</label>
+              <input type="password" formControlName="currentPassword"
+                autocomplete="current-password">
+
+              @if (passwordForm.controls.currentPassword.touched &&
+                   passwordForm.controls.currentPassword.invalid) {
+                <small>Current password is required.</small>
+              }
+            </div>
+
+            <div class="form-group">
+              <label>New Password</label>
+              <input type="password" formControlName="newPassword"
+                autocomplete="new-password">
+
+              @if (passwordForm.controls.newPassword.touched &&
+                   passwordForm.controls.newPassword.invalid) {
+                <small>
+                  Password must be at least 8 characters and contain
+                  uppercase, lowercase, and numeric characters.
+                </small>
+              }
+            </div>
+
+            <div class="form-group">
+              <label>Confirm New Password</label>
+              <input type="password" formControlName="confirmNewPassword"
+                autocomplete="new-password">
+
+              @if (passwordForm.controls.confirmNewPassword.touched &&
+                   passwordForm.controls.confirmNewPassword.invalid) {
+                <small>Please confirm your new password.</small>
+              }
+            </div>
+
+            <div class="form-actions">
+              <button type="submit" [disabled]="saving">
+                {{ saving ? 'Updating...' : 'Update Password' }}
+              </button>
+
+              <button type="button" class="cancel-button"
+                (click)="togglePassword()" [disabled]="saving">
+                Cancel
+              </button>
+            </div>
+          </form>
+        }
+
+        <div class="profile-divider"></div>
+
+        <div class="profile-actions">
+          <button class="logout-button" (click)="logout()">
+            <span>↪</span>
+            Logout
+          </button>
+        </div>
+
+      </div>
+    }
+
+  </div>
+</div>
