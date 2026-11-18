@@ -18,9 +18,9 @@ import { HttpErrorResponse } from '@angular/common/http';
 import { ProfileService } from '../../core/services/profile';
 import { AuthService } from '../../core/services/auth';
 
-import { UserProfileResponse } from '../../models/user-profile-response';
-import { UpdateProfileRequest } from '../../models/update-profile-request';
-import { ChangePasswordRequest } from '../../models/change-password-request';
+import { UserProfileResponse } from '../../models/profile/user-profile-response';
+import { UpdateProfileRequest } from '../../models/profile/update-profile-request';
+import { ChangePasswordRequest } from '../../models/profile/change-password-request';
 
 @Component({
   selector: 'app-profile',

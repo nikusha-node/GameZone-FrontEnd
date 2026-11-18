@@ -2,9 +2,9 @@ import { Injectable, inject } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
 import { Observable } from 'rxjs';
 import { environment } from '../../../environments/environment';
-import { UserProfileResponse } from '../../models/user-profile-response';
-import { UpdateProfileRequest } from '../../models/update-profile-request';
-import { ChangePasswordRequest } from '../../models/change-password-request';
+import { UserProfileResponse } from '../../models/profile/user-profile-response';
+import { UpdateProfileRequest } from '../../models/profile/update-profile-request';
+import { ChangePasswordRequest } from '../../models/profile/change-password-request';
 
 @Injectable({
   providedIn: 'root'

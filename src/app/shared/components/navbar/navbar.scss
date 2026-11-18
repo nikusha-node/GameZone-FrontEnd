@@ -7,6 +7,10 @@
 .navbar {
   background: var(--bg-primary);
   border-bottom: 1px solid var(--border);
+  position: sticky;
+  top: 0;
+  z-index: 1000;
+  width: 100%;
 }
 
 
@@ -161,7 +165,8 @@
   min-height: 45px;
   display: flex;
   align-items: center;
-  gap: 34px;
+  justify-content: center;
+  gap: 3%;
   padding: 0 max(calc((100% - 1200px) / 2), 20px);
   border-top: 1px solid var(--border);
   background: var(--bg-secondary);
@@ -208,10 +213,19 @@
   }
 }
 
-@media (max-width: 600px) {
+@media (max-width: 540px) {
   .category-nav {
-    min-height: 42px;
-    gap: 24px;
+    justify-content: flex-start;
+    gap: 22px;
+    padding: 0 16px;
+    overflow-x: auto;
+    overflow-y: hidden;
+    white-space: nowrap;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .category-nav a {
+    flex: 0 0 auto;
   }
 }
 
