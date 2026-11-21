@@ -29,4 +29,13 @@ export class ProductService {
       }
     );
   }
+
+  getFiltered(params: {
+    [param: string]: string | number | boolean;
+  }): Observable<ProductListResponse> {
+    return this.http.get<ProductListResponse>(
+      `${this.apiUrl}/filter`,
+      { params }
+    );
+  }
 }

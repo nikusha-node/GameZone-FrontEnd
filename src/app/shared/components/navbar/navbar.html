@@ -7,7 +7,7 @@
       <!-- <img src="/images/Logo.png" alt="GameZone Logo" /> -->
     </a>
 
-    <div class="search-box">
+    <!-- <div class="search-box">
       <input type="text" [placeholder]="languageService.translations().search" aria-label="Search products" />
 
       <button class="search-button" aria-label="Search">
@@ -16,7 +16,7 @@
           <path d="m16 16 4 4"></path>
         </svg>
       </button>
-    </div>
+    </div> -->
 
     <div class="header-actions">
 
@@ -55,8 +55,8 @@
 
   <nav class="category-nav">
     <a routerLink="/">{{ languageService.translations().home }}</a>
-    <a routerLink="/products">{{ languageService.translations().games }}</a>
-    <a routerLink="/products">{{ languageService.translations().consoles }}</a>
+    <a routerLink="/games">{{ languageService.translations().games }}</a>
+    <a routerLink="/consoles">{{ languageService.translations().consoles }}</a>
     <a routerLink="/products">{{ languageService.translations().gamingPCs }}</a>
     <a routerLink="/products">{{ languageService.translations().components }}</a>
     <a routerLink="/products">{{ languageService.translations().accessories }}</a>

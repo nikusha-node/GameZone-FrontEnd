@@ -1,0 +1,246 @@
+
+<div class="consoles-page">
+
+  <!-- HEADER -->
+  <div class="consoles-header">
+    <div>
+      <h1>Explore Consoles</h1>
+      <p>Find your next gaming console.</p>
+    </div>
+
+    <span class="results-count">
+      {{ pagination.totalCount }} consoles
+    </span>
+  </div>
+
+  <!-- MAIN LAYOUT -->
+  <div class="consoles-layout">
+
+    <!-- FILTER SIDEBAR -->
+    <aside class="filters-sidebar">
+
+      <!-- BRANDS -->
+      <section class="filter-section">
+        <div class="filter-title static-title">
+          <span>Brands</span>
+        </div>
+
+        <div class="filter-options">
+
+          <label class="filter-option">
+            <input
+              type="radio"
+              name="brand"
+              [checked]="filters.brandId === undefined"
+              (change)="filters.brandId = undefined; applyFilters()"
+            />
+            <span>All brands</span>
+          </label>
+
+          @for (brand of brands; track brand.id) {
+            <label class="filter-option">
+              <input
+                type="radio"
+                name="brand"
+                [checked]="filters.brandId === brand.id"
+                (change)="filters.brandId = brand.id; applyFilters()"
+              />
+              <span>{{ brand.name }}</span>
+            </label>
+          }
+
+        </div>
+      </section>
+
+      <!-- PRICE RANGE -->
+      <section class="filter-section">
+        <div class="filter-title static-title">
+          <span>Price range (₾)</span>
+        </div>
+
+        <div class="price-inputs">
+          <input
+            type="number"
+            placeholder="Min"
+            min="0"
+            [(ngModel)]="filters.minPrice"
+          />
+
+          <input
+            type="number"
+            placeholder="Max"
+            min="0"
+            [(ngModel)]="filters.maxPrice"
+          />
+        </div>
+
+        <button
+          class="apply-price"
+          type="button"
+          (click)="applyFilters()"
+        >
+          Apply
+        </button>
+      </section>
+
+      <!-- CLEAR FILTERS -->
+      <button
+        class="clear-filters"
+        type="button"
+        (click)="clearFilters()"
+      >
+        Clear all filters
+      </button>
+
+    </aside>
+
+    <!-- PRODUCTS CONTENT -->
+    <main class="consoles-content">
+
+      <!-- TOOLBAR -->
+      <div class="consoles-toolbar">
+
+        <span>{{ pagination.totalCount }} results</span>
+
+        <div class="search-box">
+          <input
+            type="text"
+            placeholder="Search consoles..."
+            [(ngModel)]="filters.search"
+            (keyup.enter)="applyFilters()"
+          />
+
+          <button type="button" (click)="applyFilters()">
+            Search
+          </button>
+        </div>
+
+        <select
+          aria-label="Sort consoles"
+          [(ngModel)]="filters.sortBy"
+          (change)="applyFilters()"
+        >
+          <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+        </select>
+
+      </div>
+
+      <!-- LOADING / ERROR / EMPTY -->
+      @if (loading) {
+
+        <div class="loading-state">
+          Loading consoles...
+        </div>
+
+      } @else if (error) {
+
+        <div class="error-state">
+          {{ error }}
+        </div>
+
+      } @else if (consoles.length === 0) {
+
+        <div class="empty-state">
+          <h2>No consoles found</h2>
+          <p>Try changing your filters.</p>
+
+          <button type="button" (click)="clearFilters()">
+            Clear filters
+          </button>
+        </div>
+
+      } @else {
+
+        <!-- CONSOLE GRID -->
+        <div class="consoles-grid">
+
+          @for (product of consoles; track product.id) {
+
+            <article class="console-card">
+
+              <div class="console-image">
+
+                @if (product.imageUrl) {
+                  <img
+                    [src]="product.imageUrl"
+                    [alt]="product.name"
+                  />
+                } @else {
+                  <span class="image-placeholder">🎮</span>
+                }
+
+              </div>
+
+              <div class="console-info">
+
+                <h3>{{ product.name }}</h3>
+
+                <p class="console-brand">
+                  {{ product.brandName || 'Gaming' }}
+                </p>
+
+                <p class="console-description">
+                  {{ product.description || 'Gaming console' }}
+                </p>
+
+                <div class="console-footer">
+
+                  <span class="console-price">
+                    {{ product.price | number:'1.2-2' }} ₾
+                  </span>
+
+                  <span
+                    class="stock-status"
+                    [class.out-of-stock]="product.stockQuantity <= 0"
+                  >
+                    {{ product.stockQuantity > 0 ? 'In stock' : 'Out of stock' }}
+                  </span>
+
+                </div>
+
+              </div>
+
+            </article>
+
+          }
+
+        </div>
+
+        <!-- PAGINATION -->
+        @if (pagination.totalPages > 1) {
+
+          <div class="pagination">
+
+            <button
+              type="button"
+              [disabled]="pagination.page <= 1"
+              (click)="changePage(pagination.page - 1)"
+            >
+              Previous
+            </button>
+
+            <span>
+              Page {{ pagination.page }} of {{ pagination.totalPages }}
+            </span>
+
+            <button
+              type="button"
+              [disabled]="pagination.page >= pagination.totalPages"
+              (click)="changePage(pagination.page + 1)"
+            >
+              Next
+            </button>
+
+          </div>
+
+        }
+
+      }
+
+    </main>
+
+  </div>
+</div>
