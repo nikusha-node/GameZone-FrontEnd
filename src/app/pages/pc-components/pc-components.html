@@ -1,0 +1,269 @@
+<div class="components-page">
+
+  <div class="components-header">
+    <div>
+      <h1>PC Components</h1>
+      <p>Build your ultimate gaming setup.</p>
+    </div>
+
+    <span class="results-count">
+      {{ pagination().totalCount }} products
+    </span>
+  </div>
+
+  <div class="components-layout">
+
+    <aside class="filters-sidebar">
+
+      <section class="filter-section">
+        <div class="filter-title">
+          <span>Categories</span>
+        </div>
+
+        <div class="filter-options">
+
+          <label class="filter-option">
+            <input
+              type="radio"
+              name="category"
+              [checked]="filters().category === undefined"
+              (change)="updateFilter('category', undefined); applyFilters()"
+            />
+            <span>All components</span>
+          </label>
+
+          @for (category of categories; track category.id) {
+            <label class="filter-option">
+              <input
+                type="radio"
+                name="category"
+                [checked]="filters().category === category.id"
+                (change)="updateFilter('category', category.id); applyFilters()"
+              />
+              <span>{{ category.name }}</span>
+            </label>
+          }
+
+        </div>
+      </section>
+
+      <section class="filter-section">
+        <div class="filter-title">
+          <span>Brands</span>
+        </div>
+
+        <div class="filter-options">
+
+          <label class="filter-option">
+            <input
+              type="radio"
+              name="brand"
+              [checked]="filters().brandId === undefined"
+              (change)="updateFilter('brandId', undefined); applyFilters()"
+            />
+            <span>All brands</span>
+          </label>
+
+          @for (brand of brands(); track brand.id) {
+            <label class="filter-option">
+              <input
+                type="radio"
+                name="brand"
+                [checked]="filters().brandId === brand.id"
+                (change)="updateFilter('brandId', brand.id); applyFilters()"
+              />
+              <span>{{ brand.name }}</span>
+            </label>
+          }
+
+        </div>
+      </section>
+
+      <section class="filter-section">
+        <div class="filter-title">
+          <span>Price range (₾)</span>
+        </div>
+
+        <div class="price-inputs">
+          <input
+            type="number"
+            placeholder="Min"
+            min="0"
+            [ngModel]="filters().minPrice"
+            (ngModelChange)="updateFilter('minPrice', $event)"
+          />
+
+          <input
+            type="number"
+            placeholder="Max"
+            min="0"
+            [ngModel]="filters().maxPrice"
+            (ngModelChange)="updateFilter('maxPrice', $event)"
+          />
+        </div>
+
+        <button
+          class="apply-price"
+          type="button"
+          (click)="applyFilters()"
+        >
+          Apply
+        </button>
+      </section>
+
+      <button
+        class="clear-filters"
+        type="button"
+        (click)="clearFilters()"
+      >
+        Clear all filters
+      </button>
+
+    </aside>
+
+    <main class="components-content">
+
+      <div class="components-toolbar">
+
+        <span>{{ pagination().totalCount }} results</span>
+
+        <div class="search-box">
+          <input
+            type="text"
+            placeholder="Search PC components..."
+            [ngModel]="filters().search"
+            (ngModelChange)="updateFilter('search', $event)"
+            (keyup.enter)="applyFilters()"
+          />
+
+          <button type="button" (click)="applyFilters()">
+            Search
+          </button>
+        </div>
+
+        <select
+          aria-label="Sort PC components"
+          [ngModel]="filters().sortBy"
+          (ngModelChange)="updateFilter('sortBy', $event); applyFilters()"
+        >
+          <option value="newest">Newest</option>
+          <option value="oldest">Oldest</option>
+          <option value="price-asc">Price: Low to High</option>
+          <option value="price-desc">Price: High to Low</option>
+        </select>
+
+      </div>
+
+      @if (loading()) {
+
+        <div class="loading-state">
+          Loading PC components...
+        </div>
+
+      } @else if (error()) {
+
+        <div class="error-state">
+          {{ error() }}
+        </div>
+
+      } @else if (components().length === 0) {
+
+        <div class="empty-state">
+          <h2>No components found</h2>
+          <p>Try changing your filters.</p>
+
+          <button type="button" (click)="clearFilters()">
+            Clear filters
+          </button>
+        </div>
+
+      } @else {
+
+        <div class="components-grid">
+
+          @for (product of components(); track product.id) {
+
+            <article class="component-card">
+
+              <div class="component-image">
+
+                @if (product.imageUrl) {
+                  <img
+                    [src]="product.imageUrl"
+                    [alt]="product.name"
+                  />
+                } @else {
+                  <span class="image-placeholder">🖥️</span>
+                }
+
+              </div>
+
+              <div class="component-info">
+
+                <h3>{{ product.name }}</h3>
+
+                <p class="component-brand">
+                  {{ product.brandName || 'PC Component' }}
+                </p>
+
+                <p class="component-description">
+                  {{ product.description || 'PC component' }}
+                </p>
+
+                <div class="component-footer">
+
+                  <span class="component-price">
+                    {{ product.price | number:'1.2-2' }} ₾
+                  </span>
+
+                  <span
+                    class="stock-status"
+                    [class.out-of-stock]="product.stockQuantity <= 0"
+                  >
+                    {{ product.stockQuantity > 0 ? 'In stock' : 'Out of stock' }}
+                  </span>
+
+                </div>
+
+              </div>
+
+            </article>
+
+          }
+
+        </div>
+
+        @if (pagination().totalPages > 1) {
+
+          <div class="pagination">
+
+            <button
+              type="button"
+              [disabled]="pagination().page <= 1"
+              (click)="changePage(pagination().page - 1)"
+            >
+              Previous
+            </button>
+
+            <span>
+              Page {{ pagination().page }} of {{ pagination().totalPages }}
+            </span>
+
+            <button
+              type="button"
+              [disabled]="pagination().page >= pagination().totalPages"
+              (click)="changePage(pagination().page + 1)"
+            >
+              Next
+            </button>
+
+          </div>
+
+        }
+
+      }
+
+    </main>
+
+  </div>
+</div>

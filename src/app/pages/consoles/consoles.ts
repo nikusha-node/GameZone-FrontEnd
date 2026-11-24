@@ -1,10 +1,10 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
+import { DecimalPipe } from '@angular/common';
 import { ProductService } from '../../core/services/product';
 import { Console } from '../../models/console/console.model';
 import { ConsoleFilters } from '../../models/console/console-filters.model';
 import { ProductListResponse } from '../../models/product/product-list-response';
-import { DecimalPipe } from '@angular/common';
 
 @Component({
   selector: 'app-consoles',
@@ -15,13 +15,12 @@ import { DecimalPipe } from '@angular/common';
 })
 export class Consoles implements OnInit {
   private productService = inject(ProductService);
-  private cdr = inject(ChangeDetectorRef);
 
-  consoles: Console[] = [];
-  loading = false;
-  error = '';
+  consoles = signal<Console[]>([]);
+  loading = signal(false);
+  error = signal('');
 
-  filters: ConsoleFilters = {
+  filters = signal<ConsoleFilters>({
     search: '',
     brandId: undefined,
     minPrice: undefined,
@@ -29,55 +28,57 @@ export class Consoles implements OnInit {
     sortBy: 'newest',
     page: 1,
     pageSize: 8
-  };
+  });
 
-  pagination: ProductListResponse = {
+  pagination = signal<ProductListResponse>({
     products: [],
     page: 1,
     pageSize: 8,
     totalCount: 0,
     totalPages: 0
-  };
+  });
 
-  brands: { id: number; name: string }[] = [];
+  brands = signal<{ id: number; name: string }[]>([]);
 
   ngOnInit(): void {
     this.loadConsoles();
   }
 
   loadConsoles(): void {
-    this.loading = true;
-    this.error = '';
+    this.loading.set(true);
+    this.error.set('');
+
+    const filters = this.filters();
 
     const params: Record<string, string | number | boolean> = {
       category: 9,
-      page: this.filters.page ?? 1,
-      pageSize: this.filters.pageSize ?? 8,
-      sortBy: this.filters.sortBy ?? 'newest'
+      page: filters.page ?? 1,
+      pageSize: filters.pageSize ?? 8,
+      sortBy: filters.sortBy ?? 'newest'
     };
 
-    if (this.filters.search) {
-      params['search'] = this.filters.search;
+    if (filters.search) {
+      params['search'] = filters.search;
     }
 
-    if (this.filters.brandId !== undefined) {
-      params['brandId'] = this.filters.brandId;
+    if (filters.brandId !== undefined) {
+      params['brandId'] = filters.brandId;
     }
 
-    if (this.filters.minPrice !== undefined) {
-      params['minPrice'] = this.filters.minPrice;
+    if (filters.minPrice !== undefined) {
+      params['minPrice'] = filters.minPrice;
     }
 
-    if (this.filters.maxPrice !== undefined) {
-      params['maxPrice'] = this.filters.maxPrice;
+    if (filters.maxPrice !== undefined) {
+      params['maxPrice'] = filters.maxPrice;
     }
 
     this.productService.getFiltered(params).subscribe({
       next: (response) => {
-        this.pagination = response;
-        this.consoles = response.products;
+        this.pagination.set(response);
+        this.consoles.set(response.products);
 
-        this.brands = [
+        const brands = [
           ...new Map(
             response.products
               .filter(product => product.brandName)
@@ -88,25 +89,38 @@ export class Consoles implements OnInit {
           ).values()
         ];
 
-        this.loading = false;
-        this.cdr.detectChanges();
+        this.brands.set(brands);
+        this.loading.set(false);
       },
       error: (error) => {
         console.error('Failed to load consoles:', error);
-        this.error = 'Failed to load consoles. Please try again.';
-        this.loading = false;
-        this.cdr.detectChanges();
+        this.error.set('Failed to load consoles. Please try again.');
+        this.loading.set(false);
       }
     });
   }
 
+  updateFilter<K extends keyof ConsoleFilters>(
+    key: K,
+    value: ConsoleFilters[K]
+  ): void {
+    this.filters.update(current => ({
+      ...current,
+      [key]: value
+    }));
+  }
+
   applyFilters(): void {
-    this.filters.page = 1;
+    this.filters.update(current => ({
+      ...current,
+      page: 1
+    }));
+
     this.loadConsoles();
   }
 
   clearFilters(): void {
-    this.filters = {
+    this.filters.set({
       search: '',
       brandId: undefined,
       minPrice: undefined,
@@ -114,17 +128,17 @@ export class Consoles implements OnInit {
       sortBy: 'newest',
       page: 1,
       pageSize: 8
-    };
+    });
 
     this.loadConsoles();
   }
 
   changePage(page: number): void {
-    if (page < 1 || page > this.pagination.totalPages) {
+    if (page < 1 || page > this.pagination().totalPages) {
       return;
     }
 
-    this.filters.page = page;
+    this.updateFilter('page', page);
     this.loadConsoles();
   }
 }

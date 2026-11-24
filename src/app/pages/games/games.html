@@ -6,43 +6,43 @@
       <p>Find your next gaming adventure.</p>
     </div>
 
-    <span class="games-count">{{ pagination.totalCount }} games</span>
+    <span class="games-count">{{ pagination().totalCount }} games</span>
   </div>
 
   <div class="games-layout">
 
     <aside class="filters-sidebar">
 
-      <!-- Best price -->
+      <!-- SALE FILTER -->
       <section class="filter-section">
         <button class="filter-title" type="button" (click)="toggleFilter('price')">
           <span>Sale</span>
-          <span class="collapse-icon">{{ showPriceFilter ? '−' : '+' }}</span>
+          <span class="collapse-icon">{{ showPriceFilter() ? '−' : '+' }}</span>
         </button>
 
-        @if (showPriceFilter) {
+        @if (showPriceFilter()) {
         <div class="filter-options">
           <label class="filter-option">
-            <input #saleCheckbox type="checkbox" [checked]="filters.onSale === true"
-              (change)="filters.onSale = saleCheckbox.checked ? true : undefined; applyFilters()" />
+            <input type="checkbox" [checked]="filters().onSale === true"
+              (change)="updateFilter('onSale', $any($event.target).checked ? true : undefined); applyFilters()" />
             <span>Yes</span>
           </label>
         </div>
         }
       </section>
 
-      <!-- Platform -->
+      <!-- PLATFORM FILTER -->
       <section class="filter-section">
         <button class="filter-title" type="button" (click)="toggleFilter('platform')">
           <span>Consoles</span>
-          <span class="collapse-icon">{{ showPlatformFilter ? '−' : '+' }}</span>
+          <span class="collapse-icon">{{ showPlatformFilter() ? '−' : '+' }}</span>
         </button>
 
-        @if (showPlatformFilter) {
+        @if (showPlatformFilter()) {
         <div class="filter-options">
           @for (platform of platforms; track platform) {
           <label class="filter-option">
-            <input type="checkbox" [checked]="filters.platform === platform"
+            <input type="checkbox" [checked]="(filters().platform ?? []).includes(platform)"
               (change)="selectPlatform(platform, $any($event.target).checked)" />
             <span>{{ platform }}</span>
           </label>
@@ -51,29 +51,30 @@
         }
       </section>
 
-      <!-- Genre -->
+      <!-- GENRE FILTER -->
       <section class="filter-section">
         <button class="filter-title" type="button" (click)="toggleFilter('genre')">
           <span>Genre</span>
-          <span class="collapse-icon">{{ showGenreFilter ? '−' : '+' }}</span>
+          <span class="collapse-icon">{{ showGenreFilter() ? '−' : '+' }}</span>
         </button>
 
-        @if (showGenreFilter) {
+        @if (showGenreFilter()) {
         <div class="filter-options">
 
-          <input class="genre-search" type="text" placeholder="Search" [(ngModel)]="genreSearch" />
+          <input class="genre-search" type="text" placeholder="Search" [ngModel]="genreSearch()"
+            (ngModelChange)="genreSearch.set($event)" />
 
-          @for (genre of filteredGenres; track genre) {
+          @for (genre of filteredGenres(); track genre) {
           <label class="filter-option">
-            <input type="checkbox" [checked]="filters.genre === genre"
+            <input type="checkbox" [checked]="(filters().genre ?? []).includes(genre)"
               (change)="selectGenre(genre, $any($event.target).checked)" />
             <span>{{ genre }}</span>
           </label>
           }
 
-          @if (!genreSearch) {
-          <button type="button" class="show-more" (click)="showAllGenres = !showAllGenres">
-            {{ showAllGenres ? '⌃ Show less' : '⌄ Show all (' + genres.length + ')' }}
+          @if (!genreSearch()) {
+          <button type="button" class="show-more" (click)="showAllGenres.update(value => !value)">
+            {{ showAllGenres() ? '⌃ Show less' : '⌄ Show all (' + genres.length + ')' }}
           </button>
           }
 
@@ -81,17 +82,18 @@
         }
       </section>
 
+      <!-- AGE FILTER -->
       <section class="filter-section">
         <button class="filter-title" type="button" (click)="toggleFilter('age')">
           <span>Age</span>
-          <span class="collapse-icon">{{ showAgeFilter ? '−' : '+' }}</span>
+          <span class="collapse-icon">{{ showAgeFilter() ? '−' : '+' }}</span>
         </button>
 
-        @if (showAgeFilter) {
+        @if (showAgeFilter()) {
         <div class="filter-options">
           @for (rating of ageRatings; track rating) {
           <label class="filter-option">
-            <input type="checkbox" [checked]="filters.ageRating === rating"
+            <input type="checkbox" [checked]="filters().ageRating === rating"
               (change)="selectAgeRating(rating, $any($event.target).checked)" />
             <span>{{ rating.replace('PEGI', '') }}+</span>
           </label>
@@ -100,15 +102,18 @@
         }
       </section>
 
-      <!-- Price range -->
+      <!-- PRICE FILTER -->
       <section class="filter-section">
         <div class="filter-title static-title">
           <span>Price range (₾)</span>
         </div>
 
         <div class="price-inputs">
-          <input type="number" placeholder="Min" [(ngModel)]="filters.minPrice" />
-          <input type="number" placeholder="Max" [(ngModel)]="filters.maxPrice" />
+          <input type="number" placeholder="Min" min="0" [ngModel]="filters().minPrice"
+            (ngModelChange)="updateFilter('minPrice', $event === null ? undefined : $event)" />
+
+          <input type="number" placeholder="Max" min="0" [ngModel]="filters().maxPrice"
+            (ngModelChange)="updateFilter('maxPrice', $event === null ? undefined : $event)" />
         </div>
 
         <button class="apply-price" type="button" (click)="applyFilters()">
@@ -122,87 +127,126 @@
 
     </aside>
 
+    <!-- GAMES CONTENT -->
     <main class="games-content">
 
+      <!-- TOOLBAR -->
       <div class="games-toolbar">
-        <span>{{ pagination.totalCount }} results</span>
+        <span>{{ pagination().totalCount }} results</span>
 
         <div class="games-search">
-          <input type="text" placeholder="Search games..." [(ngModel)]="filters.search"
-            (keyup.enter)="applyFilters()" />
+          <input type="text" placeholder="Search games..." [ngModel]="filters().search"
+            (ngModelChange)="updateFilter('search', $event)" (keyup.enter)="applyFilters()" />
 
           <button type="button" (click)="applyFilters()">
             Search
           </button>
         </div>
 
-        <select aria-label="Sort games" [(ngModel)]="filters.sortBy" (change)="applyFilters()">
+        <select aria-label="Sort games" [ngModel]="filters().sortBy"
+          (ngModelChange)="updateFilter('sortBy', $event); applyFilters()">
           <option value="newest">Newest</option>
           <option value="oldest">Oldest</option>
           <option value="price-asc">Price: Low to High</option>
           <option value="price-desc">Price: High to Low</option>
         </select>
-  </div>
-
-  @if (loading) {
-  <div class="loading-state">Loading games...</div>
-  } @else if (error) {
-  <div class="error-state">{{ error }}</div>
-  } @else if (games.length === 0) {
-  <div class="empty-state">
-    <h2>No games found</h2>
-    <p>Try changing your filters.</p>
-    <button type="button" (click)="clearFilters()">Clear filters</button>
-  </div>
-  } @else {
-  <div class="games-grid">
-
-    @for (game of games; track game.id) {
-    <article class="game-card">
-
-      <div class="game-image">
-        <span class="game-placeholder">🎮</span>
       </div>
 
-      <div class="game-info">
-        <h3>{{ game.name }}</h3>
-        <p class="game-developer">{{ game.developer }}</p>
+      <!-- LOADING -->
+      @if (loading()) {
 
-        <div class="game-tags">
-          @for (platform of game.platforms; track platform) {
-          <span>{{ platform }}</span>
-          }
-        </div>
-
-        <div class="game-footer">
-          <span class="age-rating">{{ game.ageRating }}</span>
-          <span class="release-date">
-            {{ game.releaseDate | date:'yyyy' }}
-          </span>
-        </div>
+      <div class="loading-state">
+        Loading games...
       </div>
 
-    </article>
-    }
+      } @else if (error()) {
+
+      <div class="error-state">
+        {{ error() }}
+      </div>
+
+      } @else if (games().length === 0) {
+
+      <div class="empty-state">
+        <h2>No games found</h2>
+        <p>Try changing your filters.</p>
+        <button type="button" (click)="clearFilters()">Clear filters</button>
+      </div>
+
+      } @else {
+
+      <!-- GAME GRID -->
+      <div class="games-grid">
+
+        @for (game of games(); track game.id) {
+        <article class="game-card" [routerLink]="['/game', game.id]" style="cursor: pointer;">
+          <div class="game-image">
+
+            @if (game.imageUrl) {
+            <img [src]="game.imageUrl" [alt]="game.name" loading="lazy"
+              (error)="$any($event.target).style.display = 'none'" />
+            } @else {
+            <div class="game-placeholder">
+              Image unavailable
+            </div>
+            }
+
+          </div>
+
+          <div class="game-info">
+
+            <h3>{{ game.name }}</h3>
+
+            <p class="game-developer">
+              {{ game.developer }}
+            </p>
+
+            <div class="game-tags">
+              @for (platform of game.platforms; track platform) {
+              <span>{{ platform }}</span>
+              }
+            </div>
+
+            <div class="game-footer">
+              <span class="age-rating">
+                {{ game.ageRating }}
+              </span>
+
+              <span class="release-date">
+                {{ game.releaseDate | date:'yyyy' }}
+              </span>
+            </div>
+
+          </div>
+
+        </article>
+        }
+
+      </div>
+
+      <!-- PAGINATION -->
+      @if (pagination().totalPages > 1) {
+      <div class="pagination">
+
+        <button type="button" [disabled]="pagination().page <= 1" (click)="changePage(pagination().page - 1)">
+          Previous
+        </button>
+
+        <span>
+          Page {{ pagination().page }} of {{ pagination().totalPages }}
+        </span>
+
+        <button type="button" [disabled]="pagination().page >= pagination().totalPages"
+          (click)="changePage(pagination().page + 1)">
+          Next
+        </button>
+
+      </div>
+      }
+
+      }
+
+    </main>
 
   </div>
-
-  @if (pagination.totalPages > 1) {
-  <div class="pagination">
-    <button type="button" [disabled]="pagination.page <= 1" (click)="changePage(pagination.page - 1)">
-      Previous
-    </button>
-
-    <span>Page {{ pagination.page }} of {{ pagination.totalPages }}</span>
-
-    <button type="button" [disabled]="pagination.page >= pagination.totalPages"
-      (click)="changePage(pagination.page + 1)">
-      Next
-    </button>
-  </div>
-  }
-  }
-
-  </main>
-</div>
 </div>

@@ -14,7 +14,9 @@ export class ProductService {
   private readonly apiUrl = `${environment.apiUrl}/Product`;
 
   getAll(): Observable<ProductResponse[]> {
-    return this.http.get<ProductResponse[]>(this.apiUrl);
+    return this.http.get<ProductResponse[]>(
+      `${this.apiUrl}/getall`
+    );
   }
 
   getLatest(): Observable<ProductListResponse> {
@@ -36,6 +38,12 @@ export class ProductService {
     return this.http.get<ProductListResponse>(
       `${this.apiUrl}/filter`,
       { params }
+    );
+  }
+
+  getById(id: number): Observable<ProductResponse> {
+    return this.http.get<ProductResponse>(
+      `${this.apiUrl}/get-by${id}`
     );
   }
 }

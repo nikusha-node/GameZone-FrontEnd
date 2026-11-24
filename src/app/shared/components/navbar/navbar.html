@@ -47,7 +47,7 @@
       <a routerLink="/cart" class="header-link cart-link">
         <span class="action-icon">🛒</span>
         <span>{{ languageService.translations().cart }}</span>
-        <span class="cart-count">0</span>
+        <span class="cart-count">{{ cartService.getItemCount() }}</span>
       </a>
 
     </div>
@@ -57,9 +57,8 @@
     <a routerLink="/">{{ languageService.translations().home }}</a>
     <a routerLink="/games">{{ languageService.translations().games }}</a>
     <a routerLink="/consoles">{{ languageService.translations().consoles }}</a>
-    <a routerLink="/products">{{ languageService.translations().gamingPCs }}</a>
-    <a routerLink="/products">{{ languageService.translations().components }}</a>
-    <a routerLink="/products">{{ languageService.translations().accessories }}</a>
+    <a routerLink="/pc-components">{{ languageService.translations().components }}</a>
+    <a routerLink="/accessories">{{ languageService.translations().accessories }}</a>
   </nav>
 
 </header>

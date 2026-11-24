@@ -1,38 +1,34 @@
-import { Component, OnInit, inject, ChangeDetectorRef } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { GameService } from '../../core/services/game';
 import { Game, GameFilters, GamePaginationResponse } from '../../models/game/game.model';
 import { FormsModule } from '@angular/forms';
 import { DatePipe } from '@angular/common';
+import { RouterLink } from '@angular/router';
 
 @Component({
   selector: 'app-games',
-  imports: [FormsModule, DatePipe],
+  standalone: true,
+  imports: [FormsModule, DatePipe, RouterLink],
   templateUrl: './games.html',
   styleUrl: './games.scss'
 })
 export class Games implements OnInit {
   private gameService = inject(GameService);
 
-  private cdr = inject(ChangeDetectorRef);
-
-  showPriceFilter = true;
-  showPlatformFilter = true;
-  showGenreFilter = true;
-  showAgeFilter = true;
-
-  genreSearch = '';
-  showAllGenres = false;
-
-  saleOnly = false;
-
-  games: Game[] = [];
-  loading = false;
-  error = '';
-
-  filters: GameFilters = {
+  showPriceFilter = signal(true);
+  showPlatformFilter = signal(true);
+  showGenreFilter = signal(true);
+  showAgeFilter = signal(true);
+  genreSearch = signal('');
+  showAllGenres = signal(false);
+  saleOnly = signal(false);
+  games = signal<Game[]>([]);
+  loading = signal(false);
+  error = signal('');
+  filters = signal<GameFilters>({
     search: '',
-    platform: '',
-    genre: '',
+    platform: [],
+    genre: [],
     minPrice: undefined,
     maxPrice: undefined,
     onSale: undefined,
@@ -40,7 +36,7 @@ export class Games implements OnInit {
     sortBy: 'newest',
     page: 1,
     pageSize: 8
-  };
+  });
 
   platforms = [
     'PlayStation 4',
@@ -73,16 +69,54 @@ export class Games implements OnInit {
     'PEGI18'
   ];
 
+  pagination = signal<GamePaginationResponse>({
+    items: [],
+    page: 1,
+    pageSize: 8,
+    totalCount: 0,
+    totalPages: 0
+  });
+
+  filteredGenres = computed(() => {
+    const search = this.genreSearch().toLowerCase();
+
+    const filtered = this.genres.filter(genre =>
+      genre.toLowerCase().includes(search)
+    );
+
+    return this.showAllGenres() || search
+      ? filtered
+      : filtered.slice(0, 8);
+  });
+
+  ngOnInit(): void {
+    this.loadGames();
+  }
+
+  updateFilter<K extends keyof GameFilters>(
+    key: K,
+    value: GameFilters[K]
+  ): void {
+    this.filters.update(current => ({
+      ...current,
+      [key]: value
+    }));
+  }
+
   applyFilters(): void {
-    this.filters.page = 1;
+    this.filters.update(current => ({
+      ...current,
+      page: 1
+    }));
+
     this.loadGames();
   }
 
   clearFilters(): void {
-    this.filters = {
+    this.filters.set({
       search: '',
-      platform: '',
-      genre: '',
+      platform: [],
+      genre: [],
       minPrice: undefined,
       maxPrice: undefined,
       onSale: undefined,
@@ -90,102 +124,96 @@ export class Games implements OnInit {
       sortBy: 'newest',
       page: 1,
       pageSize: 8
-    };
+    });
 
-    this.saleOnly = false;
-    this.genreSearch = '';
-    this.showAllGenres = false;
+    this.saleOnly.set(false);
+    this.genreSearch.set('');
+    this.showAllGenres.set(false);
+
     this.loadGames();
   }
 
   selectAgeRating(rating: string, checked: boolean): void {
-    this.filters.ageRating = checked ? rating : '';
+    this.updateFilter('ageRating', checked ? rating : '');
     this.applyFilters();
-
   }
-  get filteredGenres(): string[] {
-    const filtered = this.genres.filter(genre =>
-      genre.toLowerCase().includes(this.genreSearch.toLowerCase())
-    );
-
-    return this.showAllGenres || this.genreSearch
-      ? filtered
-      : filtered.slice(0, 8);
-  }
-
 
   toggleFilter(section: string): void {
     switch (section) {
       case 'price':
-        this.showPriceFilter = !this.showPriceFilter;
+        this.showPriceFilter.update(value => !value);
         break;
 
       case 'platform':
-        this.showPlatformFilter = !this.showPlatformFilter;
+        this.showPlatformFilter.update(value => !value);
         break;
 
       case 'genre':
-        this.showGenreFilter = !this.showGenreFilter;
+        this.showGenreFilter.update(value => !value);
         break;
 
       case 'age':
-        this.showAgeFilter = !this.showAgeFilter;
+        this.showAgeFilter.update(value => !value);
         break;
     }
   }
 
   selectPlatform(platform: string, checked: boolean): void {
-    this.filters.platform = checked ? platform : '';
+    this.filters.update(current => {
+      const selected = current.platform ?? [];
+
+      return {
+        ...current,
+        platform: checked
+          ? [...selected, platform]
+          : selected.filter(item => item !== platform)
+      };
+    });
+
     this.applyFilters();
   }
 
   selectGenre(genre: string, checked: boolean): void {
-    this.filters.genre = checked ? genre : '';
+    this.filters.update(current => {
+      const selected = current.genre ?? [];
+
+      return {
+        ...current,
+        genre: checked
+          ? [...selected, genre]
+          : selected.filter(item => item !== genre)
+      };
+    });
+
     this.applyFilters();
   }
 
-  pagination: GamePaginationResponse = {
-    items: [],
-    page: 1,
-    pageSize: 8,
-    totalCount: 0,
-    totalPages: 0
-  };
-
-  ngOnInit(): void {
-    this.loadGames();
-
-  }
-
   loadGames(): void {
-    this.loading = true;
-    this.error = '';
-
+    this.loading.set(true);
+    this.error.set('');
 
     const requestStart = performance.now();
 
-    this.gameService.getGames(this.filters).subscribe({
+    this.gameService.getGames(this.filters()).subscribe({
       next: (response) => {
-        console.log('Games API time:', (performance.now() - requestStart).toFixed(2), 'ms');
-        const start = performance.now();
-
-        this.pagination = response;
-        this.games = response.items;
-        this.loading = false;
-        this.cdr.detectChanges();
+        this.pagination.set(response);
+        this.games.set(response.items);
+        this.loading.set(false);
       },
       error: (error) => {
         console.error('Failed to load games:', error);
-        this.error = 'Failed to load games. Please try again.';
-        this.loading = false;
+        this.error.set('Failed to load games. Please try again.');
+        this.loading.set(false);
       }
     });
   }
 
   changePage(page: number): void {
-    if (page < 1 || page > this.pagination.totalPages) return;
+    if (page < 1 || page > this.pagination().totalPages) {
+      return;
+    }
 
-    this.filters.page = page;
+    this.updateFilter('page', page);
     this.loadGames();
   }
 }

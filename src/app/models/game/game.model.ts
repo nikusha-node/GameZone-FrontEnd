@@ -10,6 +10,7 @@ export interface Game {
   ageRating: string;
   productId: number;
   createdAt: string;
+  imageUrl: string | null;
 }
 
 export interface GamePaginationResponse {
@@ -22,8 +23,8 @@ export interface GamePaginationResponse {
 
 export interface GameFilters {
   search?: string;
-  platform?: string;
-  genre?: string;
+  platform?: string[];
+  genre?: string[];
   minPrice?: number;
   maxPrice?: number;
   onSale?: boolean;
