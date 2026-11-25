@@ -84,8 +84,7 @@
     @for (category of categories; track category.en) {
       <a
         class="category-card"
-        routerLink="/products"
-        [queryParams]="{ category: category.en }"
+        [routerLink]="category.route"
       >
         <div class="category-image">
           <img
@@ -123,8 +122,7 @@
         @for (product of productList.products; track product.id) {
           <a
             class="product-card"
-            routerLink="/products"
-            [queryParams]="{ search: product.name }"
+            [routerLink]="['/product', product.id]"
           >
             <div class="product-image">
               @if (product.imageUrl) {

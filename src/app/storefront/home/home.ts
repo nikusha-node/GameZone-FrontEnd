@@ -18,13 +18,12 @@ export class Home {
   products$ = this.productService.getLatest();
 
   categories = [
-    { image: '/images/consles.jpg', en: 'Consoles', ka: 'კონსოლები' },
-    { image: '/images/gaming_pc.jpg', en: 'Gaming PCs', ka: 'სათამაშო კომპიუტერები' },
-    { image: '/images/pc_components.jpg', en: 'PC Components', ka: 'კომპიუტერის ნაწილები' },
-    { image: '/images/access.jpg', en: 'Accessories', ka: 'აქსესუარები' },
-    { image: '/images/games.png', en: 'Games', ka: 'თამაშები' },
-    { image: '/images/monitors.jpg', en: 'Monitors', ka: 'მონიტორები' },
-    { image: '/images/gaming_laptops.jpg', en: 'Laptops', ka: 'ლეპტოპები' }
+    { image: '/images/consles.jpg', en: 'Consoles', ka: 'კონსოლები', route: '/consoles' },
+    { image: '/images/pc_components.jpg', en: 'PC Components', ka: 'კომპიუტერის ნაწილები', route: '/pc-components' },
+    { image: '/images/access.jpg', en: 'Accessories', ka: 'აქსესუარები', route: '/accessories' },
+    { image: '/images/games.png', en: 'Games', ka: 'თამაშები', route: '/games' },
+    { image: '/images/monitors.jpg', en: 'Monitors', ka: 'მონიტორები', route: '/products' },
+    { image: '/images/gaming_laptops.jpg', en: 'Laptops', ka: 'ლეპტოპები', route: '/products' }
   ];
 
   @ViewChild('categoryCarousel')

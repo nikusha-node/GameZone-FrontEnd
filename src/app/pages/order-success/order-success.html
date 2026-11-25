@@ -1,0 +1,43 @@
+<div class="success-page">
+    @if (order; as orderData) {
+    <div class="success-card">
+        <div class="success-icon">
+            <span>✓</span>
+        </div>
+
+        <h1>Order Placed Successfully!</h1>
+
+        <p class="success-description">
+            Thank you for shopping with GameZone.
+            Your order has been created successfully.
+        </p>
+
+        <div class="order-details">
+            <div>
+                <span>Order ID</span>
+                <strong>#{{ orderData.orderId }}</strong>
+            </div>
+
+            <div>
+                <span>Order Date</span>
+                <strong>{{ orderData.orderDate | date:'medium' }}</strong>
+            </div>
+
+            <div>
+                <span>Status</span>
+                <strong>{{ orderData.orderStatus }}</strong>
+            </div>
+
+            <div>
+                <span>Total</span>
+                <strong>{{ orderData.totalAmount | number:'1.2-2' }} ₾</strong>
+            </div>
+        </div>
+
+        <div class="success-actions">
+            <a routerLink="/products">Continue Shopping</a>
+            <a routerLink="/my-orders" class="secondary-action">My Orders</a>
+        </div>
+    </div>
+    }
+</div>

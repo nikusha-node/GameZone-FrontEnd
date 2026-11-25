@@ -1,4 +1,4 @@
-import { Component, OnInit, inject, signal } from '@angular/core';
+import { Component, OnInit, inject, signal, computed } from '@angular/core';
 import { ActivatedRoute, RouterLink } from '@angular/router';
 import { GameService } from '../../core/services/game';
 import { ProductService } from '../../core/services/product';
@@ -7,7 +7,8 @@ import { AuthService } from '../../core/services/auth';
 import { DatePipe, DecimalPipe } from '@angular/common';
 import { Game } from '../../models/game/game.model';
 import { ProductResponse } from '../../models/product/product-response';
-
+import { ReviewService } from '../../core/services/review';
+import { Review } from '../../models/order/review.model';
 @Component({
     selector: 'app-product-details',
     standalone: true,
@@ -74,6 +75,7 @@ export class ProductDetails implements OnInit {
         this.productService.getById(id).subscribe({
             next: product => {
                 this.product.set(product);
+                this.loadReviews(product.id);
                 this.loading.set(false);
             },
             error: error => {
@@ -84,6 +86,24 @@ export class ProductDetails implements OnInit {
         });
     }
 
+    private reviewService = inject(ReviewService);
+
+    reviews = signal<Review[]>([]);
+    reviewsLoading = signal(false);
+    reviewsError = signal('');
+
+    averageRating = computed(() => {
+        const items = this.reviews();
+
+        if (items.length === 0) {
+            return 0;
+        }
+
+        const total = items.reduce((sum, review) => sum + review.rating, 0);
+
+        return total / items.length;
+    });
+
     increaseQuantity(): void {
         const current = this.quantity();
         const stock = this.product()?.stockQuantity ?? 0;
@@ -92,6 +112,25 @@ export class ProductDetails implements OnInit {
             this.quantity.set(current + 1);
         }
     }
+
+    private loadReviews(productId: number): void {
+        this.reviewsLoading.set(true);
+        this.reviewsError.set('');
+
+        this.reviewService.getProductReviews(productId).subscribe({
+            next: reviews => {
+                this.reviews.set(reviews);
+                this.reviewsLoading.set(false);
+            },
+            error: error => {
+                console.error('Failed to load reviews:', error);
+                this.reviewsError.set('Unable to load customer reviews.');
+                this.reviewsLoading.set(false);
+            }
+        });
+    }
+
+
 
     decreaseQuantity(): void {
         if (this.quantity() > 1) {

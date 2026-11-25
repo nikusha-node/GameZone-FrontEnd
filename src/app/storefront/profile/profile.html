@@ -1,200 +1,357 @@
-
 <div class="profile-page">
   <div class="profile-container">
 
     @if (loading) {
-      <div class="loading-state">
-        <div class="loader"></div>
-        <p>Loading your profile...</p>
-      </div>
+    <div class="loading-state">
+      <div class="loader"></div>
+      <p>Loading your profile...</p>
+    </div>
     }
 
     @else if (errorMessage && !profile) {
-      <div class="error-state">
-        <h2>Something went wrong</h2>
-        <p>{{ errorMessage }}</p>
-        <button (click)="loadProfile()">Try Again</button>
-      </div>
+    <div class="error-state">
+      <h2>Something went wrong</h2>
+      <p>{{ errorMessage }}</p>
+      <button (click)="loadProfile()">Try Again</button>
+    </div>
     }
 
     @else if (profile) {
+    <div class="profile-header">
+      <div>
+        <span class="eyebrow">GAMEZONE ACCOUNT</span>
+        <h1>My Profile</h1>
+        <p>Manage your personal information and account.</p>
+      </div>
 
-      <div class="profile-header">
-        <div>
-          <span class="eyebrow">GAMEZONE ACCOUNT</span>
-          <h1>My Profile</h1>
-          <p>Manage your personal information and account.</p>
+      <button class="home-button" (click)="goHome()">
+        Back to Store
+      </button>
+    </div>
+    <div class="profile-card">
+
+      @if (errorMessage) {
+      <div class="message error">{{ errorMessage }}</div>
+      }
+
+      @if (successMessage) {
+      <div class="message success">{{ successMessage }}</div>
+      }
+
+      <!-- IDENTITY -->
+      <div class="profile-identity">
+        <div class="avatar">
+          {{ profile.firstName.charAt(0).toUpperCase() }}
         </div>
 
-        <button class="home-button" (click)="goHome()">
-          Back to Store
+        <div class="identity-info">
+          <h2>{{ profile.firstName }} {{ profile.lastName }}</h2>
+          <p>{{ profile.email }}</p>
+        </div>
+
+        <span class="verified-badge">✓ Verified</span>
+      </div>
+
+      <div class="profile-divider"></div>
+      <h3>Personal Information</h3>
+
+      @if (!editMode) {
+      <div class="information-grid">
+        <div class="information-item">
+          <label>First Name</label>
+          <p>{{ profile.firstName }}</p>
+        </div>
+
+        <div class="information-item">
+          <label>Last Name</label>
+          <p>{{ profile.lastName }}</p>
+        </div>
+
+        <div class="information-item">
+          <label>Email Address</label>
+          <p>{{ profile.email }}</p>
+        </div>
+      </div>
+
+      <button class="action-button" (click)="toggleEdit()">
+        Edit Profile
+      </button>
+      }
+
+      @if (editMode) {
+      <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
+
+        <div class="information-grid">
+          <div class="information-item">
+            <label>First Name</label>
+            <input type="text" formControlName="firstName">
+
+            @if (profileForm.controls.firstName.touched &&
+            profileForm.controls.firstName.invalid) {
+            <small>First name is required.</small>
+            }
+          </div>
+
+          <div class="information-item">
+            <label>Last Name</label>
+            <input type="text" formControlName="lastName">
+
+            @if (profileForm.controls.lastName.touched &&
+            profileForm.controls.lastName.invalid) {
+            <small>Last name is required.</small>
+            }
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" [disabled]="saving">
+            {{ saving ? 'Saving...' : 'Save Changes' }}
+          </button>
+
+          <button type="button" class="cancel-button" (click)="toggleEdit()" [disabled]="saving">
+            Cancel
+          </button>
+        </div>
+      </form>
+      }
+
+      <div class="profile-divider"></div>
+      <h3>Security</h3>
+
+      @if (!passwordMode) {
+      <p class="security-description">
+        Keep your account secure by updating your password regularly.
+      </p>
+
+      <button class="action-button" (click)="togglePassword()">
+        Change Password
+      </button>
+      }
+
+      @if (passwordMode) {
+      <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
+
+        <div class="form-group">
+          <label>Current Password</label>
+          <input type="password" formControlName="currentPassword" autocomplete="current-password">
+
+          @if (passwordForm.controls.currentPassword.touched &&
+          passwordForm.controls.currentPassword.invalid) {
+          <small>Current password is required.</small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label>New Password</label>
+          <input type="password" formControlName="newPassword" autocomplete="new-password">
+
+          @if (passwordForm.controls.newPassword.touched &&
+          passwordForm.controls.newPassword.invalid) {
+          <small>
+            Password must be at least 8 characters and contain
+            uppercase, lowercase, and numeric characters.
+          </small>
+          }
+        </div>
+
+        <div class="form-group">
+          <label>Confirm New Password</label>
+          <input type="password" formControlName="confirmNewPassword" autocomplete="new-password">
+
+          @if (passwordForm.controls.confirmNewPassword.touched &&
+          passwordForm.controls.confirmNewPassword.invalid) {
+          <small>Please confirm your new password.</small>
+          }
+        </div>
+
+        <div class="form-actions">
+          <button type="submit" [disabled]="saving">
+            {{ saving ? 'Updating...' : 'Update Password' }}
+          </button>
+
+          <button type="button" class="cancel-button" (click)="togglePassword()" [disabled]="saving">
+            Cancel
+          </button>
+        </div>
+      </form>
+      }
+
+      <div class="profile-divider"></div>
+      <div class="profile-actions">
+        <button class="logout-button" (click)="logout()">
+          <span>↪</span>
+          Logout
         </button>
       </div>
 
-      <div class="profile-card">
+    </div>
+    <div class="orders-section">
 
-        @if (errorMessage) {
-          <div class="message error">{{ errorMessage }}</div>
-        }
-
-        @if (successMessage) {
-          <div class="message success">{{ successMessage }}</div>
-        }
-
-        <div class="profile-identity">
-          <div class="avatar">
-            {{ profile.firstName.charAt(0).toUpperCase() }}
-          </div>
-
-          <div class="identity-info">
-            <h2>{{ profile.firstName }} {{ profile.lastName }}</h2>
-            <p>{{ profile.email }}</p>
-          </div>
-
-          <span class="verified-badge">✓ Verified</span>
+      <div class="orders-heading">
+        <div>
+          <span class="eyebrow">YOUR PURCHASES</span>
+          <h2>Order History</h2>
+          <p>Track your orders and review your purchased products.</p>
         </div>
 
-        <div class="profile-divider"></div>
+        <span class="orders-count">
+          {{ orders.length }} Orders
+        </span>
+      </div>
 
-        <h3>Personal Information</h3>
+      @if (ordersLoading) {
+      <div class="loading-state">
+        <div class="loader"></div>
+        <p>Loading your orders...</p>
+      </div>
+      }
 
-        @if (!editMode) {
-          <div class="information-grid">
-            <div class="information-item">
-              <label>First Name</label>
-              <p>{{ profile.firstName }}</p>
+      @else if (ordersError) {
+      <div class="error-state">
+        <p>{{ ordersError }}</p>
+        <button (click)="loadOrders()">Try Again</button>
+      </div>
+      }
+
+      @else if (orders.length === 0) {
+      <div class="orders-empty">
+        <div class="empty-icon">📦</div>
+        <h3>No orders yet</h3>
+        <p>Your purchases will appear here once you place an order.</p>
+
+        <button class="action-button" (click)="goHome()">
+          Explore Store
+        </button>
+      </div>
+      }
+
+      @else {
+      <div class="orders-list">
+
+        @for (order of orders; track order.id) {
+        <div class="order-card">
+          <div class="order-card-header">
+            <div>
+              <span class="order-label">ORDER</span>
+              <h3>#{{ order.id }}</h3>
             </div>
 
-            <div class="information-item">
-              <label>Last Name</label>
-              <p>{{ profile.lastName }}</p>
+            <span class="order-status" [class.pending]="getOrderStatus(order.orderStatus) === 'Pending'"
+              [class.processing]="getOrderStatus(order.orderStatus) === 'Processing'"
+              [class.shipped]="getOrderStatus(order.orderStatus) === 'Shipped'"
+              [class.delivered]="getOrderStatus(order.orderStatus) === 'Delivered'"
+              [class.cancelled]="getOrderStatus(order.orderStatus) === 'Cancelled'">
+
+              {{ getOrderStatus(order.orderStatus) }}
+
+            </span>
+          </div>
+
+          <div class="order-meta">
+            <div>
+              <span>Order Date</span>
+              <p>{{ order.orderDate | date:'mediumDate' }}</p>
             </div>
 
-            <div class="information-item">
-              <label>Email Address</label>
-              <p>{{ profile.email }}</p>
+            <div>
+              <span>Products</span>
+              <p>{{ order.items.length }} items</p>
             </div>
           </div>
 
-          <button class="action-button" (click)="toggleEdit()">
-            Edit Profile
-          </button>
-        }
+          <div class="profile-divider"></div>
+          <div class="order-products">
 
-        @if (editMode) {
-          <form [formGroup]="profileForm" (ngSubmit)="updateProfile()">
+            @for (item of order.items; track item.id) {
+            <div class="order-product">
 
-            <div class="information-grid">
-              <div class="information-item">
-                <label>First Name</label>
-                <input type="text" formControlName="firstName">
+              @if (item.imageUrl) {
+              <img class="order-product-image" [src]="item.imageUrl" [alt]="item.productName">
+              }
+              @else {
+              <div class="order-product-image image-placeholder">
+                No Image
+              </div>
+              }
 
-                @if (profileForm.controls.firstName.touched &&
-                     profileForm.controls.firstName.invalid) {
-                  <small>First name is required.</small>
+              <div class="order-product-info">
+                <h4>{{ item.productName }}</h4>
+                <p>Quantity: {{ item.quantity }}</p>
+                <p>
+                  {{ item.unitPrice | number:'1.2-2' }} GEL each
+                </p>
+              </div>
+
+              @if (getOrderStatus(order.orderStatus) === 'Delivered') {
+              <button class="review-button" (click)="openReview(item.productId)">
+                Write Review
+              </button>
+              }
+
+              <strong class="order-item-subtotal">
+                {{ item.subtotal | number:'1.2-2' }} GEL
+              </strong>
+
+            </div>
+
+            @if (reviewingProductId !== null) {
+            @for (item of order.items; track item.id) {
+            @if (item.productId === reviewingProductId) {
+            <div class="review-form">
+
+              <h3>Review {{ item.productName }}</h3>
+
+              <label>Rating</label>
+
+              <div class="rating-options">
+                @for (star of [1, 2, 3, 4, 5]; track star) {
+                <button type="button" [class.selected]="star <= reviewRating" (click)="reviewRating = star">
+                  ★
+                </button>
                 }
               </div>
 
-              <div class="information-item">
-                <label>Last Name</label>
-                <input type="text" formControlName="lastName">
+              <label for="review-comment">Your Comment</label>
 
-                @if (profileForm.controls.lastName.touched &&
-                     profileForm.controls.lastName.invalid) {
-                  <small>Last name is required.</small>
-                }
+              <textarea id="review-comment" [(ngModel)]="reviewComment" placeholder="Share your experience..." rows="4">
+        </textarea>
+
+              @if (reviewError) {
+              <p class="review-error">{{ reviewError }}</p>
+              }
+
+              <div class="review-actions">
+                <button (click)="submitReview(item.productId)" [disabled]="reviewSubmitting">
+                  {{ reviewSubmitting ? 'Submitting...' : 'Submit Review' }}
+                </button>
+
+                <button class="cancel-button" (click)="closeReview()" [disabled]="reviewSubmitting">
+                  Cancel
+                </button>
               </div>
+
             </div>
+            }
+            }
+            }
+            }
 
-            <div class="form-actions">
-              <button type="submit" [disabled]="saving">
-                {{ saving ? 'Saving...' : 'Save Changes' }}
-              </button>
+          </div>
+          <div class="order-card-footer">
+            <span>Total Amount</span>
+            <strong>
+              {{ order.totalAmount | number:'1.2-2' }} GEL
+            </strong>
+          </div>
 
-              <button type="button" class="cancel-button"
-                (click)="toggleEdit()" [disabled]="saving">
-                Cancel
-              </button>
-            </div>
-          </form>
-        }
-
-        <div class="profile-divider"></div>
-
-        <h3>Security</h3>
-
-        @if (!passwordMode) {
-          <p class="security-description">
-            Keep your account secure by updating your password regularly.
-          </p>
-
-          <button class="action-button" (click)="togglePassword()">
-            Change Password
-          </button>
-        }
-
-        @if (passwordMode) {
-          <form [formGroup]="passwordForm" (ngSubmit)="changePassword()">
-
-            <div class="form-group">
-              <label>Current Password</label>
-              <input type="password" formControlName="currentPassword"
-                autocomplete="current-password">
-
-              @if (passwordForm.controls.currentPassword.touched &&
-                   passwordForm.controls.currentPassword.invalid) {
-                <small>Current password is required.</small>
-              }
-            </div>
-
-            <div class="form-group">
-              <label>New Password</label>
-              <input type="password" formControlName="newPassword"
-                autocomplete="new-password">
-
-              @if (passwordForm.controls.newPassword.touched &&
-                   passwordForm.controls.newPassword.invalid) {
-                <small>
-                  Password must be at least 8 characters and contain
-                  uppercase, lowercase, and numeric characters.
-                </small>
-              }
-            </div>
-
-            <div class="form-group">
-              <label>Confirm New Password</label>
-              <input type="password" formControlName="confirmNewPassword"
-                autocomplete="new-password">
-
-              @if (passwordForm.controls.confirmNewPassword.touched &&
-                   passwordForm.controls.confirmNewPassword.invalid) {
-                <small>Please confirm your new password.</small>
-              }
-            </div>
-
-            <div class="form-actions">
-              <button type="submit" [disabled]="saving">
-                {{ saving ? 'Updating...' : 'Update Password' }}
-              </button>
-
-              <button type="button" class="cancel-button"
-                (click)="togglePassword()" [disabled]="saving">
-                Cancel
-              </button>
-            </div>
-          </form>
-        }
-
-        <div class="profile-divider"></div>
-
-        <div class="profile-actions">
-          <button class="logout-button" (click)="logout()">
-            <span>↪</span>
-            Logout
-          </button>
         </div>
+        }
 
       </div>
+      }
+
+    </div>
+
     }
 
   </div>

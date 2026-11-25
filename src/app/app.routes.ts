@@ -62,6 +62,12 @@ export const routes: Routes = [
       import('./storefront/cart/cart').then(m => m.Cart)
   },
   {
+    path: 'order-success',
+    loadComponent: () =>
+      import('./pages/order-success/order-success')
+        .then(m => m.OrderSuccess)
+  },
+  {
     path: '**',
     redirectTo: ''
   }
