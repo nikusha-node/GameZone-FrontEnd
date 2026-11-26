@@ -15,16 +15,17 @@ import { RouterLink } from '@angular/router';
 export class Games implements OnInit {
   private gameService = inject(GameService);
 
+  filtersOpen = signal(false);
   showPriceFilter = signal(true);
   showPlatformFilter = signal(true);
   showGenreFilter = signal(true);
   showAgeFilter = signal(true);
   genreSearch = signal('');
   showAllGenres = signal(false);
-  saleOnly = signal(false);
   games = signal<Game[]>([]);
   loading = signal(false);
   error = signal('');
+
   filters = signal<GameFilters>({
     search: '',
     platform: [],
@@ -93,6 +94,10 @@ export class Games implements OnInit {
     this.loadGames();
   }
 
+  toggleFilters(): void {
+    this.filtersOpen.update(value => !value);
+  }
+
   updateFilter<K extends keyof GameFilters>(
     key: K,
     value: GameFilters[K]
@@ -126,9 +131,9 @@ export class Games implements OnInit {
       pageSize: 8
     });
 
-    this.saleOnly.set(false);
     this.genreSearch.set('');
     this.showAllGenres.set(false);
+    this.filtersOpen.set(false);
 
     this.loadGames();
   }
@@ -192,15 +197,13 @@ export class Games implements OnInit {
     this.loading.set(true);
     this.error.set('');
 
-    const requestStart = performance.now();
-
     this.gameService.getGames(this.filters()).subscribe({
-      next: (response) => {
+      next: response => {
         this.pagination.set(response);
         this.games.set(response.items);
         this.loading.set(false);
       },
-      error: (error) => {
+      error: error => {
         console.error('Failed to load games:', error);
         this.error.set('Failed to load games. Please try again.');
         this.loading.set(false);

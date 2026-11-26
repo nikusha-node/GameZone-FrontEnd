@@ -57,6 +57,8 @@ export class Consoles implements OnInit {
       sortBy: filters.sortBy ?? 'newest'
     };
 
+
+
     if (filters.search) {
       params['search'] = filters.search;
     }
@@ -98,6 +100,12 @@ export class Consoles implements OnInit {
         this.loading.set(false);
       }
     });
+  }
+
+  filtersOpen = signal(false);
+
+  toggleFilters(): void {
+    this.filtersOpen.update(value => !value);
   }
 
   updateFilter<K extends keyof ConsoleFilters>(

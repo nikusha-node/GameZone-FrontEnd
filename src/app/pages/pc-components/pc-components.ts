@@ -1,8 +1,6 @@
-
 import { Component, OnInit, inject, signal } from '@angular/core';
 import { FormsModule } from '@angular/forms';
 import { DecimalPipe } from '@angular/common';
-
 import { ProductService } from '../../core/services/product';
 import { ProductResponse } from '../../models/product/product-response';
 import { ProductListResponse } from '../../models/product/product-list-response';
@@ -76,12 +74,9 @@ export class PcComponents implements OnInit {
 
     this.productService.getAll().subscribe({
       next: (products) => {
-        // Keep only PC component categories (0–7).
         this.allComponents = products.filter(product =>
           product.category >= 0 && product.category <= 7
         );
-
-        // Build the brand list from all PC components.
         const brands = [
           ...new Map(
             this.allComponents
@@ -97,7 +92,6 @@ export class PcComponents implements OnInit {
         ];
 
         this.brands.set(brands);
-
         this.applyLocalFilters();
         this.loading.set(false);
       },
@@ -109,19 +103,21 @@ export class PcComponents implements OnInit {
     });
   }
 
+  filtersOpen = signal(false);
+
+  toggleFilters(): void {
+    this.filtersOpen.update(value => !value);
+  }
+
   applyLocalFilters(): void {
     const filters = this.filters();
 
     let filtered = [...this.allComponents];
-
-    // Category filter
     if (filters.category !== undefined) {
       filtered = filtered.filter(
         product => product.category === filters.category
       );
     }
-
-    // Search filter
     if (filters.search.trim()) {
       const search = filters.search.trim().toLowerCase();
 
@@ -131,15 +127,11 @@ export class PcComponents implements OnInit {
         (product.description?.toLowerCase().includes(search) ?? false)
       );
     }
-
-    // Brand filter
     if (filters.brandId !== undefined) {
       filtered = filtered.filter(
         product => product.brandId === filters.brandId
       );
     }
-
-    // Price filters
     if (filters.minPrice !== undefined) {
       filtered = filtered.filter(
         product => product.price >= filters.minPrice!
@@ -151,8 +143,6 @@ export class PcComponents implements OnInit {
         product => product.price <= filters.maxPrice!
       );
     }
-
-    // Sorting
     filtered.sort((a, b) => {
       switch (filters.sortBy) {
         case 'oldest':
@@ -171,11 +161,9 @@ export class PcComponents implements OnInit {
       }
     });
 
-    // Pagination
     const totalCount = filtered.length;
     const totalPages = Math.ceil(totalCount / filters.pageSize);
     const start = (filters.page - 1) * filters.pageSize;
-
     const paginatedProducts = filtered.slice(
       start,
       start + filters.pageSize

@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, signal } from '@angular/core';
 import { RouterLink } from '@angular/router';
 import { ThemeService } from '../../../core/services/theme';
 import { LanguageService, Language } from '../../../core/services/language';
@@ -18,6 +18,8 @@ export class Navbar implements OnInit {
   protected authService = inject(AuthService);
   protected cartService = inject(CartService);
 
+  menuOpen = signal(false);
+
   ngOnInit(): void {
     if (this.authService.isAuthenticated()) {
       this.cartService.getCart().subscribe({
@@ -33,5 +35,13 @@ export class Navbar implements OnInit {
   changeLanguage(event: Event): void {
     const select = event.target as HTMLSelectElement;
     this.languageService.setLanguage(select.value as Language);
+  }
+
+  toggleMenu(): void {
+    this.menuOpen.update(open => !open);
+  }
+
+  closeMenu(): void {
+    this.menuOpen.set(false);
   }
 }

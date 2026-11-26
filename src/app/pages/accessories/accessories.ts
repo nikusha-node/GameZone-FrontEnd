@@ -34,6 +34,8 @@ export class Accessories implements OnInit {
   loading = signal(false);
   error = signal('');
 
+  filtersOpen = signal(false);
+
   filters = signal<AccessoryFilters>({
     search: '',
     brandId: undefined,
@@ -62,6 +64,10 @@ export class Accessories implements OnInit {
 
   ngOnInit(): void {
     this.loadAccessories();
+  }
+
+  toggleFilters(): void {
+    this.filtersOpen.update(value => !value);
   }
 
   loadAccessories(): void {

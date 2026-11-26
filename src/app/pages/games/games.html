@@ -2,6 +2,7 @@
 
   <div class="games-header">
     <div>
+      <span class="section-eyebrow">GAMEZONE COLLECTION</span>
       <h1>Explore Games</h1>
       <p>Find your next gaming adventure.</p>
     </div>
@@ -11,7 +12,15 @@
 
   <div class="games-layout">
 
-    <aside class="filters-sidebar">
+    <!-- FILTER SIDEBAR -->
+    <aside class="filters-sidebar" [class.filters-open]="filtersOpen()">
+
+      <div class="filter-panel-heading">
+        <h2>Filters</h2>
+        <button type="button" class="clear-filters" (click)="clearFilters()">
+          Clear all
+        </button>
+      </div>
 
       <!-- SALE FILTER -->
       <section class="filter-section">
@@ -25,7 +34,7 @@
           <label class="filter-option">
             <input type="checkbox" [checked]="filters().onSale === true"
               (change)="updateFilter('onSale', $any($event.target).checked ? true : undefined); applyFilters()" />
-            <span>Yes</span>
+            <span>On sale</span>
           </label>
         </div>
         }
@@ -34,7 +43,7 @@
       <!-- PLATFORM FILTER -->
       <section class="filter-section">
         <button class="filter-title" type="button" (click)="toggleFilter('platform')">
-          <span>Consoles</span>
+          <span>Platforms</span>
           <span class="collapse-icon">{{ showPlatformFilter() ? '−' : '+' }}</span>
         </button>
 
@@ -61,7 +70,7 @@
         @if (showGenreFilter()) {
         <div class="filter-options">
 
-          <input class="genre-search" type="text" placeholder="Search" [ngModel]="genreSearch()"
+          <input class="genre-search" type="text" placeholder="Search genres..." [ngModel]="genreSearch()"
             (ngModelChange)="genreSearch.set($event)" />
 
           @for (genre of filteredGenres(); track genre) {
@@ -85,7 +94,7 @@
       <!-- AGE FILTER -->
       <section class="filter-section">
         <button class="filter-title" type="button" (click)="toggleFilter('age')">
-          <span>Age</span>
+          <span>Age rating</span>
           <span class="collapse-icon">{{ showAgeFilter() ? '−' : '+' }}</span>
         </button>
 
@@ -117,11 +126,11 @@
         </div>
 
         <button class="apply-price" type="button" (click)="applyFilters()">
-          Apply
+          Apply price
         </button>
       </section>
 
-      <button class="clear-filters" type="button" (click)="clearFilters()">
+      <button class="clear-filters-bottom" type="button" (click)="clearFilters()">
         Clear all filters
       </button>
 
@@ -132,7 +141,16 @@
 
       <!-- TOOLBAR -->
       <div class="games-toolbar">
-        <span>{{ pagination().totalCount }} results</span>
+
+        <button class="mobile-filter-button" type="button" (click)="toggleFilters()"
+          [attr.aria-expanded]="filtersOpen()">
+          <span>☷</span>
+          {{ filtersOpen() ? 'Hide filters' : 'Filters' }}
+        </button>
+
+        <span class="results-count">
+          {{ pagination().totalCount }} results
+        </span>
 
         <div class="games-search">
           <input type="text" placeholder="Search games..." [ngModel]="filters().search"
@@ -150,6 +168,7 @@
           <option value="price-asc">Price: Low to High</option>
           <option value="price-desc">Price: High to Low</option>
         </select>
+
       </div>
 
       <!-- LOADING -->
@@ -179,7 +198,9 @@
       <div class="games-grid">
 
         @for (game of games(); track game.id) {
-        <article class="game-card" [routerLink]="['/game', game.id]" style="cursor: pointer;">
+
+        <a class="game-card" [routerLink]="['/game', game.id]">
+
           <div class="game-image">
 
             @if (game.imageUrl) {
@@ -195,11 +216,11 @@
 
           <div class="game-info">
 
-            <h3>{{ game.name }}</h3>
+            <span class="game-developer">
+              {{ game.developer || 'GameZone' }}
+            </span>
 
-            <p class="game-developer">
-              {{ game.developer }}
-            </p>
+            <h3>{{ game.name }}</h3>
 
             <div class="game-tags">
               @for (platform of game.platforms; track platform) {
@@ -219,13 +240,15 @@
 
           </div>
 
-        </article>
+        </a>
+
         }
 
       </div>
 
       <!-- PAGINATION -->
       @if (pagination().totalPages > 1) {
+
       <div class="pagination">
 
         <button type="button" [disabled]="pagination().page <= 1" (click)="changePage(pagination().page - 1)">
@@ -242,6 +265,7 @@
         </button>
 
       </div>
+
       }
 
       }
